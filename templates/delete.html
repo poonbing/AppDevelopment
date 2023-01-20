@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Offers</th>
+                <th>Action</th>
+            </tr>
+            {% for products in product_list %}
+                <tr>
+                    <th>{{ products['id'] }}</th>
+                    <th>{{ products['name'] }}</th>
+                    <th>{{ products['description'] }}</th>
+                    <th>{{ products['image'] }}</th>
+                    <th>{{products['offer']}}</th>
+                    <th>
+                        <form method="POST" onsubmit="return confirm('Do you want to submit?')">
+                            <button type="submit" value="{{ products['id'] }}"  name="submit">Delete</button>
+                        </form>
+                    </th>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

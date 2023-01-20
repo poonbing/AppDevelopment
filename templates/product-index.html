@@ -43,30 +43,15 @@
             </div>
             {% endfor %}
         </section>
-        <div class="update-form">
-            <form action="/" method="POST">
-                <div class="mb-3">
-                    <label for="name" name="form-label">Name:</label>
-                    <input type="text" name="name" id="name">
-                </div>
-                <div class="mb-3">
-                    <label for="price" name="form-label">Price:</label>
-                    <input type="number" name="price" id="price">
-                </div>
-                <div class="mb-3">
-                    <label for="description" name="form-label">Description:</label>
-                    <input type="text" name="description" id="description">
-                </div>
-                <div class="mb-3">
-                    <label for="image" name="form-label">Image path:</label>
-                    <input type="text" name="image" id="image">
-                </div>
-                <div class="mb-3">
-                    <label for="offer" name="form-label">Offer:</label>
-                    <input type="number" name="offer" id="offer">
-                </div>
-                <button type="submit" class="btn btn-primary">Update</button>
-            </form>
+        <form action="/update.html" method="GET">
+            <button type="submit" class="btn btn-primary" value="update">update</button>
+        </form>
+        <form action="/create.html" method="GET">
+            <button type="submit" class="btn btn-primary" value="create">create</button>
+        </form>
+        <form action="/delete.html" method="GET">
+            <button type="submit" class="btn btn-primary" value="delete">delete</button>
+        </form>
         </div>
         <!-- Related items section-->
         <section class="py-5 bg-light">
