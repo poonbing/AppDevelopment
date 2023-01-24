@@ -43,13 +43,13 @@
             </div>
             {% endfor %}
         </section>
-        <form action="/update.html" method="GET">
-            <button type="submit" class="btn btn-primary" value="update">update</button>
+        <form action="/update" method="GET">
+            <button type="submit" class="btn btn-primary" value="{{ products.get_id }}">update</button>
         </form>
-        <form action="/create.html" method="GET">
-            <button type="submit" class="btn btn-primary" value="create">create</button>
+        <form action="/create" method="GET">
+            <button type="submit" class="btn btn-primary" value="{{ products.get_id }}">create</button>
         </form>
-        <form action="/delete.html" method="GET">
+        <form action="/delete" method="GET">
             <button type="submit" class="btn btn-primary" value="delete">delete</button>
         </form>
         </div>

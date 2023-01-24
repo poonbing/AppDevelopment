@@ -1,0 +1,412 @@
+    {% extends "layout.html" %}
+
+{% block content %}
+    <section>
+        <div class="top-picture">
+            <img src="static/images/homepic.png" alt="">
+            <h1 class="img-header">PREMIUM PLAYING CARDS</h1>
+            <h5 class="img-header">A curated selection of the finest playing cards in the world.</h5>
+            <a class="btn" href="">SHOP NOW &#8594;</a>
+        </div>
+    </section>
+    <hr>
+    <!-------- featured top selling decks ---------->
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">TOP SELLING DECKS <i class="fa-solid fa-crown"></i></h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Up to 20% off on selected products! <br> Get Them Now!</p>
+                </div>
+            </div>
+        </header>
+        <!-- Section-->
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    {% for item in top_items %}
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Sale badge-->
+                            {% if not(item.get_price() == item.get_offered_price()) %}
+                                <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+                            {% else %}
+                            {% endif %}
+                            <!-- Product image-->
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">{{ item.get_name() }}</h5>
+                                    <!-- Product reviews-->
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                    </div>
+                                    <!-- Product price-->
+                                    {% if not(item.get_price() == item.get_offered_price()) %}
+                                        <span class="text-decoration-line-through">${{ item.get_price() }}</span>
+                                        <span>${{ item.get_offered_price() }}</span>
+                                    {% else %}
+                                        <span >${{ item.get_price() }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+
+    <!------ featured new arrivals -------->
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">NEW ARRIVALS</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Get your hands on them now!</p>
+                </div>
+            </div>
+        </header>
+        <!-- Section-->
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    {% for item in new_items %}
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Sale badge-->
+                            {% if not(item.get_price() == item.get_offered_price()) %}
+                                <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+                            {% else %}
+                            {% endif %}
+                            <!-- Product image-->
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">{{ item.get_name() }}</h5>
+                                    <!-- Product reviews-->
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                    </div>
+                                    <!-- Product price-->
+                                    {% if not(item.get_price() == item.get_offered_price()) %}
+                                        <span class="text-decoration-line-through">${{ item.get_price() }}</span>
+                                        <span>${{ item.get_offered_price() }}</span>
+                                    {% else %}
+                                        <span >${{ item.get_price() }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="global">
+                    <div class="footer-container">
+                        <div class="row">
+                            <div class="home-column">
+                                <h6>Services</h6>
+                                <ul>
+                                    <li><a href="">Contact Us</a></li>
+                                    <li><a href="">My Account</a></li>
+                                    <li><a href="">Shipping & Returns</a></li>
+                                    <li><a href="">Terms & Services</a></li>
+                                    <li><a href="">Refund Policy</a></li>
+                                </ul>
+                            </div>
+                            <div class="home-column">
+                                <h6>Categories</h6>
+                                <ul>
+                                    <li><a href="">Playing Cards</a></li>
+                                    <li><a href="">Accessories</a></li>
+                                    <li><a href="">Tutorials</a></li>
+                                </ul>
+                            </div>
+                            <div class="home-column">
+                                <h6>Legal</h6>
+                                <ul>
+                                    <li><a href="">Terms & Conditions</a></li>
+                                    <li><a href="">Privacy Policy</a></li>
+                                    <li><a href="">Terms of use</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="social-icons">
+                            <h4>Follow Us</h4>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-google"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                        <p class="copyright"> &copy; Copyright All rights reserved.</p>
+                    </div>
+            </div>
+        </footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-------- hardcode
+    <div class="categories">
+        <h2>TOP SELLING DECKS <i class="fa-solid fa-crown"></i></h2>
+        <div class="small-container">
+            <div class="row">
+                <div class="col-3">
+                    <a href=""><img src="static/images/mint2.png" alt=""></a>
+                    <p>Mint 2</p>
+                    <div class="price">$20.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/mementomori.png" alt=""></a>
+                    <p>Memento Mori</p>
+                    <div class="price">$15.50</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/noc.png" alt=""></a>
+                    <p>NOC</p>
+                    <div class="price">$11.50</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/monarch.png" alt=""></a>
+                    <p>Monarchs</p>
+                    <div class="price">$14.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/CherryCasino(teal).png" alt=""></a>
+                    <p>Cherry Casino (Tropicana Teal)</p>
+                    <div class="price">$18.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/OrbitV8.png" alt=""></a>
+                    <p>Orbit V8</p>
+                    <div class="price">$18.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/VirtuosoP1.png" alt=""></a>
+                    <p>Virtuoso P1</p>
+                    <div class="price">$30.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/BicycleRider.png" alt=""></a>
+                    <p>Bicycle Rider Back</p>
+                    <div class="price">$5.50</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/JerryNuggets.png" alt=""></a>
+                    <p>Jerry's Nuggets (Vintage Feel)</p>
+                    <div class="price">$18.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/KingandLegacy.png" alt=""></a>
+                    <p>King and Legacy</p>
+                    <div class="price">$18.50</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/Regalia.png" alt=""></a>
+                    <p>Regalia</p>
+                    <div class="price">$25.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/Bicycle1900.png" alt=""></a>
+                    <p>Bicycle 1900</p>
+                    <div class="price">$12.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    ------->
+    <!---------------New Arrivals--------->
+    <!---------- hardcode
+    <div class="categories-2">
+        <h2>NEW ARRIVALS</h2>
+        <div class="small-container">
+            <div class="row">
+                <div class="col-3">
+                    <a href=""><img src="static/images/darkknight.png" alt=""></a>
+                    <p>The Dark Knight</p>
+                    <div class="price">$22.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/RegaliaRed.png" alt=""></a>
+                    <p>Regalia Red</p>
+                    <div class="price">$20.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/noc3000x3.png" alt=""></a>
+                    <p>NOC 3000X3</p>
+                    <div class="price">$14.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/cherrycasino(grey).png" alt=""></a>
+                    <p>Cherry Casino (Grey Edition)</p>
+                    <div class="price">$75.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/ironmanmk1.png" alt=""></a>
+                    <p>Iron Man MK1</p>
+                    <div class="price">$75.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/vault.png" alt=""></a>
+                    <p>The Vault</p>
+                    <div class="price">$13.50</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/instantnoodles.png" alt=""></a>
+                    <p>Instant Noodles (Spicy Edition)</p>
+                    <div class="price">$18.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/summernocpro.png" alt=""></a>
+                    <p>Summer NOC Pro</p>
+                    <div class="price">$15.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/butterfly.png" alt=""></a>
+                    <p>Butterfly Seasons</p>
+                    <div class="price">$22.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/cocopalms.png" alt=""></a>
+                    <p>Coco Palms</p>
+                    <div class="price">$15.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/deckdisplay.png" alt=""></a>
+                    <p>Deck Display Storage</p>
+                    <div class="price">$35.00</div>
+                </div>
+                <div class="col-3">
+                    <a href=""><img src="static/images/miracleone.png" alt=""></a>
+                    <p>Miracle One</p>
+                    <div class="price">$14.50</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="global">
+            <div class="curve">
+                <div class="footer-container">
+                    <div class="row">
+                        <div class="home-column">
+                            <h6>Services</h6>
+                            <ul>
+                                <li><a href="">Contact Us</a></li>
+                                <li><a href="">My Account</a></li>
+                                <li><a href="">Shipping & Returns</a></li>
+                                <li><a href="">Terms & Services</a></li>
+                                <li><a href="">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                        <div class="home-column">
+                            <h6>Categories</h6>
+                            <ul>
+                                <li><a href="">Playing Cards</a></li>
+                                <li><a href="">Accessories</a></li>
+                                <li><a href="">Tutorials</a></li>
+                            </ul>
+                        </div>
+                        <div class="home-column">
+                            <h6>Legal</h6>
+                            <ul>
+                                <li><a href="">Terms & Conditions</a></li>
+                                <li><a href="">Privacy Policy</a></li>
+                                <li><a href="">Terms of use</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="social">
+                        <h4>Follow Us</h4>
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-twitter"></i></a>
+                        <a href="#"><i class="fa fa-snapchat"></i></a>
+                        <a href="#"><i class="fa fa-instagram"></i></a>
+                        <a href="#"><i class="fa fa-google-plus"></i></a>
+                    </div>
+                    <p class="copyright"> &copy; Copyright All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    --------->
+{% endblock content %}

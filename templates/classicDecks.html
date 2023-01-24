@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+{% block title %} Retrieve Decks {% endblock %}
+
+
+{% block content %}
+{% from "formHelper.html" import render_field %}
+
+<div class="container">
+    <div class="row">
+        <div class="col md-12">
+            <div class="jumbotron p-3">
+                <h2>Create <b>New Classic Deck</b> <button type="button" class="btn btn-success float-right"
+                data-toggle="modal" data-target="#mymodal">Add New Product</button></h2>
+
+
+                    <!----- edit product ------>
+                    <div id="modaledit" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Update information</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form action=""method="POST">
+                                        <div class="form-group">
+                                            <label>Name:</label>
+                                            <input type="hidden" name="id" value="id">
+                                            <input type="text" class="form-control" name="name" value="Bicycle">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Brand</label>
+                                            <input type="text" class="form-control" name="email" value="Bicycle">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Price</label>
+                                            <input type="text" class="form-control" name="price" value="$10.00">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit">Update</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </table>
+            </div>
+
+
+            <!----- Add new product ------->
+                <div id="mymodal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add New Product</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="" method="POST">
+
+                                    <div class="form-group">
+                                        {{ render_field(form.name) }}
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        {{ render_field(form.brand) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ render_field(form.price) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit">Add New Product</button>
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

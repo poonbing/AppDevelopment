@@ -1,8 +1,10 @@
-class Product:
-    def __init__(self, id_count, name, description, price, image, offer):
+class Deck:
+    def __init__(self, id_count, name, brand, deck_type, description, price, image, offer):
         self.offered_price = None
         self.product_id = id_count + 1
         self.name = name
+        self.brand = brand
+        self.type = deck_type
         self.description = description
         self.price = f"{float(price):.2f}"
         self.image = image
@@ -19,6 +21,18 @@ class Product:
 
     def get_name(self):
         return self.name
+
+    def set_brand(self, brand):
+        self.brand = brand
+
+    def get_brand(self):
+        return self.brand
+
+    def set_type(self, deck_type):
+        self.type = deck_type
+
+    def get_type(self):
+        return self.type
 
     def set_description(self, description):
         self.description = description
@@ -48,3 +62,4 @@ class Product:
         of = float(float(self.price)*((100 - int(self.offer)) / 100))
         self.offered_price = f"{of:.2f}"
         return self.offered_price
+
