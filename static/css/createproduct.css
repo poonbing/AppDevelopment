@@ -1,0 +1,27 @@
+.ctn{
+
+    background: grey;
+    color: black;
+    padding: 10px;
+    text-align: center;
+}
+
+.add-new-product{
+    margin-left: 20px;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 22px;
+    background: transparent;
+}
+
+.add-new-product:hover{
+    background: white;
+    transition: ease-in-out 0.5s;
+}
+
+
+.product-ctn{
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+
+}

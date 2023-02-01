@@ -5,56 +5,12 @@
 {% block content %}
 {% from "formHelper.html" import render_field %}
 
-<div class="container">
-    <div class="row">
-        <div class="col md-12">
-            <div class="jumbotron p-3">
-                <h2>Create <b>New Luxury Deck</b> <button type="button" class="btn btn-success float-right"
+<div class="ctn">
+    <div class="ctn-row">
+        <div class="ctn-row-col">
+            <div class="product-header">
+                <h2>Create New Product <button type="button" class="add-new-product"
                 data-toggle="modal" data-target="#mymodal">Add New Product</button></h2>
-
-
-                    <!----- edit product ------>
-                    <div id="modaledit" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Update information</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <form action=""method="POST">
-                                        <div class="form-group">
-                                            <label>Name:</label>
-                                            <input type="hidden" name="id" value="id">
-                                            <input type="text" class="form-control" name="name" value="Bicycle">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Brand</label>
-                                            <input type="text" class="form-control" name="email" value="Bicycle">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Price</label>
-                                            <input type="text" class="form-control" name="price" value="$10.00">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <button class="btn btn-primary" type="submit">Update</button>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                </table>
-            </div>
 
 
             <!----- Add new product ------->
@@ -68,20 +24,43 @@
                                 <form action="" method="POST">
 
                                     <div class="form-group">
-                                        {{ render_field(form.name) }}
+                                        {{ form.name.label }}
+                                        <br>
+                                        {{ form.name }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.brand.label }}
+                                        <br>
+                                        {{ form.brand }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.type.label }}
+                                        <br>
+                                        {{ form.type }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.description.label }}
+                                        <br>
+                                        {{ form.description }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.price.label }}
+                                        <br>
+                                        {{ form.price }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.picture.label }}
+                                        <br>
+                                        {{ form.picture }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.offer.label }}
+                                        <br>
+                                        {{ form.offer }}
                                     </div>
 
-
                                     <div class="form-group">
-                                        {{ render_field(form.brand) }}
-                                    </div>
-
-                                    <div class="form-group">
-                                        {{ render_field(form.price) }}
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button class="btn btn-primary" type="submit">Add New Product</button>
+                                        <button class="btn btn-primary" type="submit" name="submit" value="create">Add New Product</button>
                                     </div>
 
                                 </form>
@@ -95,7 +74,112 @@
                     </div>
                 </div>
 
+                <div id="modal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Update Product</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST">
+                                    <div class="form-group">
+                                        <label for="product_id">Enter id of target:</label>
+                                        <input type="number" name="product_id" id="product_id">
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.name.label }}
+                                        <br>
+                                        {{ form2.name }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.brand.label }}
+                                        <br>
+                                        {{ form2.brand }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.type.label }}
+                                        <br>
+                                        {{ form2.type }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.description.label }}
+                                        <br>
+                                        {{ form2.description }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.price.label }}
+                                        <br>
+                                        {{ form2.price }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.picture.label }}
+                                        <br>
+                                        {{ form2.picture }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form2.offer.label }}
+                                        <br>
+                                        {{ form2.offer }}
+                                    </div>
 
+                                    <div class="form-group">
+                                            <div style="display:none"><input type="text" name="function" value="update"></div>
+                                            <button class="btn btn-primary" type="submit" name="submit" value="update">Update Product</button>
+                                        </form>
+                                    </div>
+
+
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-------- Product table list ------->
+            <table class="product-table">
+                <tr class="table-header">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Offers</th>
+                    <th>Action</th>
+                </tr>
+
+                <!------ Update button function ------>
+            {% for products in product_list %}
+
+                <!----- product table list ------>
+                <tr class="product-list">
+                    <td>{{ products['id'] }}</td>
+                    <td>{{ products['name'] }}</td>
+                    <td>{{ products['brand'] }}</td>
+                    <td>{{ products['type'] }}</td>
+                    <td>${{ products['price'] }}</td>
+                    <td>{{ products['description'] }}</td>
+                    <td>{{ products['image'] }}</td>
+                    <td>{{ products['offer'] }}</td>
+                    <td>
+                        <div class="d-buttons">
+                            <form method="POST" onsubmit="return confirm('Do you want to delete item id: {{ products['id'] }}')">
+                                <div style="display:none"><input type="text" name="function" value="delete"></div>
+                                <button class="delete-btn" type="submit" value="{{ products['id'] }}" name="submit">Delete</button>
+                            </form>
+                            <form method="GET">
+                                <button class="delete-btn" data-toggle="modal" data-target="#modal" type="button">Update</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
 
         </div>
     </div>
@@ -106,4 +190,3 @@
 
 
 {% endblock %}
-

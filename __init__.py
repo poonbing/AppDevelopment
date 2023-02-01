@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, url_for, redirect
 import shelve
-from Forms import CreateNewProductForm
+from Form1 import CreateDeckForm
+from Form2 import UpdateDeckForm
 from Decks import Deck
 import random
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'SecretKey'
 
 
 def retrieve_db(shelve_name, key):
@@ -29,25 +31,39 @@ def current_count(shelve_name, key):
     return counter
 
 
+def offered_price(price, offer):
+    of = float(float(price)*((100 - int(offer)) / 100))
+    offer_price = f"{of:.2f}"
+    return offer_price
+
+
 print(retrieve_db('products', 'decks'))
+print(retrieve_db('user', 'cart'))
 
 
 # --Lewis--:Homepage
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def homepage():
-    db = retrieve_db('products', 'decks')
-    data = list(db.values())
-    topitems = []
-    items = random.sample(data, k=8)
-    for product in items:
-        topitems.append(Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer']))
-    newitems = []
-    data.reverse()
-    for c in range(0, 8):
-        product = data[c]
-        newitems.append(Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer']))
-
-    return render_template('home.html', top_items=topitems, new_items=newitems)
+    if request.method == 'POST':
+        product_list = retrieve_db('products', 'decks')
+        product_id = request.form.get("id")
+        print(product_id)
+        product = [product_list[product_id]]
+        print(product)
+        return render_template("product-index.html", products=product)
+    else:
+        db = retrieve_db('products', 'decks')
+        data = list(db.values())
+        topitems = []
+        items = random.sample(data, k=8)
+        for product in items:
+            topitems.append(product)
+        newitems = []
+        data.reverse()
+        for c in range(0, 8):
+            product = data[c]
+            newitems.append(product)
+        return render_template('home.html', top_items=topitems, new_items=newitems)
 
 
 @app.route("/accessories")
@@ -56,133 +72,182 @@ def homepage_accessories():
 
 
 @app.route('/luxuryDecks', methods=['GET', 'POST'])
-def create_new_luxury():
-    create_product_form = CreateNewProductForm(request.form)
-    if request.method == 'POST' and create_product_form.validate():
-        product = {
-            'id': current_count('products', 'decks'),
-            'name': create_product_form.name.data,
-            'brand': create_product_form.brand.data,
-            'type': 'Luxury',
-            'description': create_product_form.description.data,
-            'price': f"{create_product_form.price.data:.2f}",
-            'image': create_product_form.image.data,
-            'offer': 0
-        }
-        with shelve.open('products') as db:
-            decks = db['decks']
-            decks.append(product)
-            db['decks'] = decks
-            db.sync()
-        luxury_decks = Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer'])
-        print(product, 'is stored in luxurydecks.db successfully with Product ID == ', luxury_decks.get_product_id())
-    return render_template('luxuryDecks.html', form=create_product_form)
+def product_database():
+    form = CreateDeckForm(request.form)
+    form2 = UpdateDeckForm(request.form)
+    if request.method == 'POST':
+        if request.form.get('submit') == 'create':
+            product = {
+                'id': current_count('products', 'decks'),
+                'name': form.name.data,
+                'brand': form.brand.data,
+                'type': form.type.data,
+                'description': form.description.data,
+                'price': f"{form.price.data:.2f}",
+                'image': form.picture.data,
+                'offer': form.offer.data,
+                'offered price': offered_price(form.price.data, form.offer.data)
+            }
+            with shelve.open('products') as db:
+                decks = db['decks']
+                decks[current_count('products', 'decks')] = product
+                db['decks'] = decks
+                db.sync()
+            print('created')
+            return redirect(url_for('product_database'))
+        elif request.form.get('submit') in retrieve_db('products', 'decks'):
+            print(request.form.get('submit'))
+            if request.form.get('function') == "delete":
+                delete_id = request.form.get('submit')
+                print(delete_id)
+                product = retrieve_db('products', 'decks')
+                cid = str(delete_id)
+                product.pop(cid)
+                count = 0
+                product_list = {}
+                for keys in product:
+                    count += 1
+                    cid = str(count)
+                    item = product[keys]
+                    item['id'] = cid
+                    product_list[cid] = item
+                commit_db('products', 'decks', product_list)
+                print("deleted")
+                return redirect(url_for('product_database'))
+        elif request.form.get('function') == 'update':
+            print('clear 1')
+            db = retrieve_db('products', 'decks')
+            uid = request.form.get('product_id')
+            print(uid)
+            product = db[uid]
+            if form2.name.data != "":
+                product['name'] = form2.name.data
+                print('name')
+            if form2.brand.data != "":
+                product['brand'] = form2.brand.data
+            if form2.type.data is not None:
+                product['type'] = form2.type.data
+            if form2.description.data != "":
+                product['description'] = form2.description.data
+            if form2.price.data is not None:
+                product['price'] = f"{form2.price.data:.2f}"
+            if form2.picture.data != "":
+                product['image'] = form2.picture.data
+            if form2.offer.data is not None:
+                print('offer change')
+                product['offer'] = form2.offer.data
+                product['offered price'] = offered_price(product['price'], product['offer'])
+            uid = str(uid)
+            db[uid] = product
+            commit_db('products', 'decks', db)
+            print("updated")
+            return redirect(url_for('product_database'))
+    else:
+        product = retrieve_db('products', 'decks')
+        product_list = product.values()
+        return render_template('luxuryDecks.html', form=form, form2=form2, product_list=product_list, product=product)
+
 
 
 @app.route('/retrieveluxuryDecks', methods=['GET', 'POST'])
 def retrieve_luxury():
-    db = retrieve_db('products', 'decks')
-    data = list(db.values())
-    products = []
-    for product in data:
-        if product['type'] == "Luxury":
-            products.append(Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer']))
-        else:
-            pass
-    return render_template('retrieveluxuryDecks.html', products=products)
-
-
-@app.route('/classicDecks', methods=['GET', 'POST'])
-def create_new_classic():
-    create_product_form = CreateNewProductForm(request.form)
-    if request.method == 'POST' and create_product_form.validate():
-        product = {
-            'id': current_count('products', 'decks'),
-            'name': create_product_form.name.data,
-            'brand': create_product_form.brand.data,
-            'type': 'Classic',
-            'description': create_product_form.description.data,
-            'price': f"{create_product_form.price.data:.2f}",
-            'image': create_product_form.image.data,
-            'offer': 0
-        }
-        with shelve.open('products') as db:
-            decks = db['decks']
-            decks.append(product)
-            db['decks'] = decks
-            db.sync()
-        luxury_decks = Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer'])
-        print(product, 'is stored in luxurydecks.db successfully with Product ID == ', luxury_decks.get_product_id())
-    return render_template('classicDecks.html', form=create_product_form)
+    if request.method == 'POST':
+        product_list = retrieve_db('products', 'decks')
+        product_id = request.form.get("id")
+        print(product_id)
+        product = [product_list[product_id]]
+        print(product)
+        return render_template("product-index.html", products=product)
+    else:
+        db = retrieve_db('products', 'decks')
+        data = list(db.values())
+        products = []
+        for product in data:
+            if product['type'] == "Luxury":
+                products.append(product)
+            else:
+                pass
+        return render_template('retrieveluxuryDecks.html', products=products)
 
 
 @app.route('/retrieveclassicDecks', methods=['GET', 'POST'])
 def retrieve_classic():
-    db = retrieve_db('products', 'decks')
-    data = list(db.values())
-    products = []
-    for product in data:
-        if product['type'] == "Classic":
-            products.append(Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer']))
-        else:
-            pass
-    return render_template('retrieveclassicDecks.html', products=products)
-
-
-@app.route('/cardistryDecks', methods = ['GET', 'POST'])
-def create_new_cardistry():
-    create_product_form = CreateNewProductForm(request.form)
-    if request.method == 'POST' and create_product_form.validate():
-        product = {
-            'id': current_count('products', 'decks'),
-            'name': create_product_form.name.data,
-            'brand': create_product_form.brand.data,
-            'type': 'Cardistry',
-            'description': create_product_form.description.data,
-            'price': f"{create_product_form.price.data:.2f}",
-            'image': create_product_form.image.data,
-            'offer': 0
-        }
-        with shelve.open('products') as db:
-            decks = db['decks']
-            decks.append(product)
-            db['decks'] = decks
-            db.sync()
-        luxury_decks = Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer'])
-        print(product, 'is stored in luxurydecks.db successfully with Product ID == ', luxury_decks.get_product_id())
-    return render_template('cardistryDecks.html', form=create_product_form)
+    if request.method == 'POST':
+        product_list = retrieve_db('products', 'decks')
+        product_id = request.form.get("id")
+        print(product_id)
+        product = [product_list[product_id]]
+        print(product)
+        return render_template("product-index.html", products=product)
+    else:
+        db = retrieve_db('products', 'decks')
+        data = list(db.values())
+        products = []
+        for product in data:
+            if product['type'] == "Classic":
+                products.append(product)
+            else:
+                pass
+        return render_template('retrieveclassicDecks.html', products=products)
 
 
 @app.route('/retrievecardistryDecks', methods=['GET', 'POST'])
 def retrieve_cardistry():
-    db = retrieve_db('products', 'decks')
-    data = list(db.values())
-    products = []
-    for product in data:
-        if product['type'] == "Cardistry":
-            products.append(Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer']))
-        else:
-            pass
-    return render_template('retrievecardistryDecks.html', products=products)
+    if request.method == 'POST':
+        product_list = retrieve_db('products', 'decks')
+        product_id = request.form.get("id")
+        print(product_id)
+        product = [product_list[product_id]]
+        print(product)
+        return render_template("product-index.html", products=product)
+    else:
+        db = retrieve_db('products', 'decks')
+        data = list(db.values())
+        products = []
+        for product in data:
+            if product['type'] == "Cardistry":
+                products.append(product)
+            else:
+                pass
+        return render_template('retrievecardistryDecks.html', products=products)
 # --Lewis--:Homepage end
 
 
 # --BP--:Product view start
 @app.route('/product', methods=['POST', 'GET'])
 def product_page():
-    product_list = retrieve_db('products', 'decks')
-    product_id = '1'
-    product = product_list[product_id]
-    products = [Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer'])]
-    return render_template("product-index.html", products=products)
+    if request.method == 'GET':
+        product_list = retrieve_db('products', 'decks')
+        product_id = request.form['id']
+        product = product_list[product_id]
+        products = [Deck((int(product['id'])-1), product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer'])]
+        return render_template("product-index.html", products=products)
+    if request.method == "POST":
+        select_id = request.form.get('select id')
+        quantity = request.form.get('quantity')
+        db = retrieve_db('user', 'cart')
+        if select_id in db:
+            existing = db[select_id]
+            quantity = int(existing)+int(quantity)
+            db[select_id] = int(quantity)
+            print(db)
+            commit_db('user', 'cart', db)
+        elif select_id not in db:
+            db[select_id] = int(quantity)
+            print(db)
+            commit_db('user', 'cart', db)
+        product_list = retrieve_db('products', 'decks')
+        products = [product_list[select_id]]
+        return render_template("product-index.html", products=products)
+
 
 
 @app.route('/update', methods=['POST', 'GET'])
 def update_product_info():
     product_id = request.form.get('submit')
+    print(product_id)
     if request.method == 'POST':
         product_list = retrieve_db('products', 'decks')
-        product_id = '1'
         product = product_list[product_id]
         if request.form['name'] != "":
             product['name'] = request.form['name']
@@ -196,64 +261,19 @@ def update_product_info():
             product['description'] = request.form['description']
         if request.form['offer'] != "":
             product['offer'] = request.form['offer']
+            product['offered price'] = offered_price(product['price'], product['offer'])
         if request.form['image'] != "":
             product.form['image'] = request.form['image']
         product_list[product_id] = product
         commit_db('products', 'decks', product_list)
         print('updated')
-        return redirect(url_for('product_page'))
+        return redirect(url_for('homepage'))
     else:
         print('updating')
         return render_template('update.html')
-
-
-@app.route('/create', methods=['POST', 'GET'])
-def create_new_product():
-    if request.method == 'POST':
-        product_list = retrieve_db('products', 'decks')
-        new_id = current_count('products', 'decks')
-        product = {}
-        product['id'] = str(new_id)
-        product['name'] = request.form['name']
-        product['brand'] = request.form['brand']
-        product['type'] = request.form['type']
-        product['price'] = f"{float(request.form['price']):.2f}"
-        product['description'] = request.form['description']
-        product['image'] = request.form['image']
-        product['offer'] = request.form['offer']
-        product_list[new_id] = product
-        commit_db('products', 'decks', product_list)
-        print('item created')
-        return redirect(url_for('product_page'))
-    else:
-        print('creating item')
-        return render_template('create.html')
-
-
-@app.route('/delete', methods=['POST', 'GET'])
-def delete():
-    if request.method == "POST":
-        delete_id = request.form.get('submit')
-        product = retrieve_db('products', 'decks')
-        cid = str(delete_id)
-        product.pop(cid)
-        count = 1
-        product_list = {}
-        for keys in product:
-            cid = str(count)
-            item = product[keys]
-            item['id'] = cid
-            product_list[cid] = item
-            count += 1
-        commit_db('products', 'decks', product_list)
-        product_list = product_list.values()
-        return render_template('delete.html', product_list=product_list)
-    else:
-        product_list = retrieve_db('products', 'decks')
-        product_list = product_list.values()
-        return render_template('delete.html', product_list=product_list)
 # --BP--:Product view end
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
