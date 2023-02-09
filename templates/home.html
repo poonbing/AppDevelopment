@@ -33,7 +33,7 @@
                             {% else %}
                             {% endif %}
                             <!-- Product image-->
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <img class="card-img-top" src="{{ url_for('static', filename='uploads/'+item['image']) }}" alt="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" />
                             <!-- Product details-->
                             <div class="card-body p-4">
                                 <div class="text-center">
@@ -95,7 +95,7 @@
                             {% else %}
                             {% endif %}
                             <!-- Product image-->
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <img class="card-img-top" src="{{ url_for('static', filename='uploads/'+item['image']) }}" alt="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" />
                             <!-- Product details-->
                             <div class="card-body p-4">
                                 <div class="text-center">
@@ -232,189 +232,4 @@
 
 
 
-<!-------- hardcode
-    <div class="categories">
-        <h2>TOP SELLING DECKS <i class="fa-solid fa-crown"></i></h2>
-        <div class="small-container">
-            <div class="row">
-                <div class="col-3">
-                    <a href=""><img src="static/images/mint2.png" alt=""></a>
-                    <p>Mint 2</p>
-                    <div class="price">$20.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/mementomori.png" alt=""></a>
-                    <p>Memento Mori</p>
-                    <div class="price">$15.50</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/noc.png" alt=""></a>
-                    <p>NOC</p>
-                    <div class="price">$11.50</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/monarch.png" alt=""></a>
-                    <p>Monarchs</p>
-                    <div class="price">$14.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/CherryCasino(teal).png" alt=""></a>
-                    <p>Cherry Casino (Tropicana Teal)</p>
-                    <div class="price">$18.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/OrbitV8.png" alt=""></a>
-                    <p>Orbit V8</p>
-                    <div class="price">$18.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/VirtuosoP1.png" alt=""></a>
-                    <p>Virtuoso P1</p>
-                    <div class="price">$30.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/BicycleRider.png" alt=""></a>
-                    <p>Bicycle Rider Back</p>
-                    <div class="price">$5.50</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/JerryNuggets.png" alt=""></a>
-                    <p>Jerry's Nuggets (Vintage Feel)</p>
-                    <div class="price">$18.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/KingandLegacy.png" alt=""></a>
-                    <p>King and Legacy</p>
-                    <div class="price">$18.50</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/Regalia.png" alt=""></a>
-                    <p>Regalia</p>
-                    <div class="price">$25.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/Bicycle1900.png" alt=""></a>
-                    <p>Bicycle 1900</p>
-                    <div class="price">$12.00</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr>
-    ------->
-    <!---------------New Arrivals--------->
-    <!---------- hardcode
-    <div class="categories-2">
-        <h2>NEW ARRIVALS</h2>
-        <div class="small-container">
-            <div class="row">
-                <div class="col-3">
-                    <a href=""><img src="static/images/darkknight.png" alt=""></a>
-                    <p>The Dark Knight</p>
-                    <div class="price">$22.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/RegaliaRed.png" alt=""></a>
-                    <p>Regalia Red</p>
-                    <div class="price">$20.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/noc3000x3.png" alt=""></a>
-                    <p>NOC 3000X3</p>
-                    <div class="price">$14.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/cherrycasino(grey).png" alt=""></a>
-                    <p>Cherry Casino (Grey Edition)</p>
-                    <div class="price">$75.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/ironmanmk1.png" alt=""></a>
-                    <p>Iron Man MK1</p>
-                    <div class="price">$75.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/vault.png" alt=""></a>
-                    <p>The Vault</p>
-                    <div class="price">$13.50</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/instantnoodles.png" alt=""></a>
-                    <p>Instant Noodles (Spicy Edition)</p>
-                    <div class="price">$18.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/summernocpro.png" alt=""></a>
-                    <p>Summer NOC Pro</p>
-                    <div class="price">$15.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/butterfly.png" alt=""></a>
-                    <p>Butterfly Seasons</p>
-                    <div class="price">$22.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/cocopalms.png" alt=""></a>
-                    <p>Coco Palms</p>
-                    <div class="price">$15.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/deckdisplay.png" alt=""></a>
-                    <p>Deck Display Storage</p>
-                    <div class="price">$35.00</div>
-                </div>
-                <div class="col-3">
-                    <a href=""><img src="static/images/miracleone.png" alt=""></a>
-                    <p>Miracle One</p>
-                    <div class="price">$14.50</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <footer>
-        <div class="global">
-            <div class="curve">
-                <div class="footer-container">
-                    <div class="row">
-                        <div class="home-column">
-                            <h6>Services</h6>
-                            <ul>
-                                <li><a href="">Contact Us</a></li>
-                                <li><a href="">My Account</a></li>
-                                <li><a href="">Shipping & Returns</a></li>
-                                <li><a href="">Terms & Services</a></li>
-                                <li><a href="">Refund Policy</a></li>
-                            </ul>
-                        </div>
-                        <div class="home-column">
-                            <h6>Categories</h6>
-                            <ul>
-                                <li><a href="">Playing Cards</a></li>
-                                <li><a href="">Accessories</a></li>
-                                <li><a href="">Tutorials</a></li>
-                            </ul>
-                        </div>
-                        <div class="home-column">
-                            <h6>Legal</h6>
-                            <ul>
-                                <li><a href="">Terms & Conditions</a></li>
-                                <li><a href="">Privacy Policy</a></li>
-                                <li><a href="">Terms of use</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="social">
-                        <h4>Follow Us</h4>
-                        <a href="#"><i class="fa fa-facebook"></i></a>
-                        <a href="#"><i class="fa fa-twitter"></i></a>
-                        <a href="#"><i class="fa fa-snapchat"></i></a>
-                        <a href="#"><i class="fa fa-instagram"></i></a>
-                        <a href="#"><i class="fa fa-google-plus"></i></a>
-                    </div>
-                    <p class="copyright"> &copy; Copyright All rights reserved.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-    --------->
 {% endblock content %}
