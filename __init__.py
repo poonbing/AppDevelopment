@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect
 import shelve
 from Form1 import CreateDeckForm
 from Form2 import UpdateDeckForm
+from Form3 import CreateTutorial, CreateAccessories
 from Decks import Deck
 import random
 
@@ -31,14 +32,46 @@ def current_count(shelve_name, key):
     return counter
 
 
+def unique_id(type):
+    idc = str(random.randint(100, 999))
+    if type == 'decks':
+        kind = 'D'
+        db = retrieve_db('products', 'decks')
+        keys = db.keys()
+        output = kind+idc
+        if output in keys:
+            return unique_id(type)
+        else:
+            return output
+    elif type == 'accessories':
+        kind = 'A'
+        db = retrieve_db('products', 'accessories')
+        keys = db.keys()
+        output = kind+idc
+        if output in keys:
+            return unique_id(type)
+        else:
+            return output
+    elif type == 'user':
+        kind = 'U'
+        db = retrieve_db('users', 'users')
+        keys = db.keys()
+        output = kind+idc
+        if output in keys:
+            return unique_id(type)
+        else:
+            return output
+
+
+def generate_receipt():
+    idc = str(random.randint(100000, 999999))
+    return idc
+
+
 def offered_price(price, offer):
     of = float(float(price)*((100 - int(offer)) / 100))
     offer_price = f"{of:.2f}"
     return offer_price
-
-
-print(retrieve_db('products', 'decks'))
-print(retrieve_db('user', 'cart'))
 
 
 # --Lewis--:Homepage
@@ -64,11 +97,6 @@ def homepage():
             product = data[c]
             newitems.append(product)
         return render_template('home.html', top_items=topitems, new_items=newitems)
-
-
-@app.route("/accessories")
-def homepage_accessories():
-    return render_template('accessories.html')
 
 
 @app.route('/luxuryDecks', methods=['GET', 'POST'])
@@ -146,7 +174,6 @@ def product_database():
         product = retrieve_db('products', 'decks')
         product_list = product.values()
         return render_template('luxuryDecks.html', form=form, form2=form2, product_list=product_list, product=product)
-
 
 
 @app.route('/retrieveluxuryDecks', methods=['GET', 'POST'])
@@ -241,7 +268,6 @@ def product_page():
         return render_template("product-index.html", products=products)
 
 
-
 @app.route('/update', methods=['POST', 'GET'])
 def update_product_info():
     product_id = request.form.get('submit')
@@ -274,6 +300,122 @@ def update_product_info():
 # --BP--:Product view end
 
 
+@app.route('/createAccessories', methods=['POST', 'GET'])
+def create_accessories():
+    form = CreateAccessories(request.form)
+    if request.method == 'POST':
+        if request.form.get('submit') == 'create':
+            product = {
+                'id': current_count('products', 'accessories'),
+                'name': form.name.data,
+                'brand': form.brand.data,
+                'description': form.description.data,
+                'price': f"{form.price.data:.2f}",
+                'image': form.picture.data,
+                'offer': form.offer.data,
+                'offered price': offered_price(form.price.data, form.offer.data)
+            }
+            db = retrieve_db('products', 'accessories')
+            db[current_count('products', 'accessories')] = product
+            commit_db('Accessories', 'accessories', db)
+            print('created')
+            return redirect(url_for('create_accessories'))
+        elif request.form.get('submit') in retrieve_db('products', 'accessories'):
+            print(request.form.get('submit'))
+            if request.form.get('function') == "delete":
+                delete_id = request.form.get('submit')
+                print(delete_id)
+                product = retrieve_db('products', 'accessories')
+                cid = str(delete_id)
+                product.pop(cid)
+                count = 0
+                product_list = {}
+                for keys in product:
+                    count += 1
+                    cid = str(count)
+                    item = product[keys]
+                    item['id'] = cid
+                    product_list[cid] = item
+                commit_db('products', 'accessories', product_list)
+                print("deleted")
+                return redirect(url_for('create_accessories'))
+    else:
+        product = retrieve_db('Accessories', 'accessories')
+        product_list = product.values()
+        return render_template('CreateAccessories.html', form=form, product_list=product_list, product=product)
+
+
+@app.route('/accessories', methods=['GET', 'POST'])
+def retrieve_accessories():
+        if request.method == 'POST':
+            product_list = retrieve_db('products', 'accessories')
+            product_id = request.form.get("id")
+            print(product_id)
+            product = [product_list[product_id]]
+            print(product)
+            return render_template("product-index.html", products=product)
+        else:
+            db = retrieve_db('products', 'accessories')
+            data = list(db.values())
+            products = []
+            for product in data:
+                products.append(product)
+
+        return render_template('accessories.html', products=products)
+
+
+@app.route('/createTutorial', methods=['POST', 'GET'])
+def create_tutorial():
+    form = CreateTutorial(request.form)
+    if request.method == 'POST':
+        if request.form.get('submit') == 'create':
+            video = {
+                'id': current_count('Tutorial', 'video'),
+                'name': form.name.data,
+                'difficulty': form.difficulty.data,
+                'type': form.type.data,
+                'video': form.video.data,
+                'thumbnail': form.thumbnail.data,
+            }
+            db = retrieve_db('Tutorial', 'video')
+            db[current_count('Tutorial', 'video')] = video
+            commit_db('Tutorial', 'video', db)
+            print('created')
+            return redirect(url_for('create_tutorial'))
+        elif request.form.get('submit') in retrieve_db('Tutorial', 'video'):
+            print(request.form.get('submit'))
+            if request.form.get('function') == "delete":
+                delete_id = request.form.get('submit')
+                print(delete_id)
+                product = retrieve_db('Tutorial', 'video')
+                cid = str(delete_id)
+                product.pop(cid)
+                count = 0
+                product_list = {}
+                for keys in product:
+                    count += 1
+                    cid = str(count)
+                    item = product[keys]
+                    item['id'] = cid
+                    product_list[cid] = item
+                commit_db('Tutorial', 'video', product_list)
+                print("deleted")
+                return redirect(url_for('create_tutorial'))
+    else:
+        video = retrieve_db('Tutorial', 'video')
+        tutorial_list = video.values()
+        return render_template('createTutorial.html', form=form, tutorial_list=tutorial_list, video=video)
+
+
+@app.route('/tutorials', methods=['POST', 'GET'])
+def receive_tutorial():
+    db = retrieve_db('Tutorial', 'video')
+    tutorial = list(db.values())
+    tutorial_list = []
+    for video in tutorial:
+        tutorial_list.append(video)
+    return render_template('tutorial.html', tutorial_list=tutorial_list)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-

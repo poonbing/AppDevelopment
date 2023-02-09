@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+{% block title %} Retrieve Decks {% endblock %}
+{% block content %}
+{% from "formHelper.html" import render_field %}
+
+<div class="ctn">
+    <div class="ctn-row">
+        <div class="ctn-row-col">
+            <div class="product-header">
+                <h2>Create New Accessory<button type="button" class="add-new-product"
+                data-toggle="modal" data-target="#mymodal">Add New Product</button></h2>
+
+
+            <!----- Add new product ------->
+                <div id="mymodal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add New Product</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="" method="POST">
+
+                                    <div class="form-group">
+                                        {{ form.name.label }}
+                                        <br>
+                                        {{ form.name }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.brand.label }}
+                                        <br>
+                                        {{ form.brand }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.description.label }}
+                                        <br>
+                                        {{ form.description }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.price.label }}
+                                        <br>
+                                        {{ form.price }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.picture.label }}
+                                        <br>
+                                        {{ form.picture }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.offer.label }}
+                                        <br>
+                                        {{ form.offer }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit" name="submit" value="create">Add New Product</button>
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                    <!-------- Product table list ------->
+            <table class="product-table">
+                <tr class="table-header">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Offer(% off)</th>
+                    <th>Action</th>
+                </tr>
+
+                <!------ Update button function ------>
+            {% for products in product_list %}
+
+                <!----- product table list ------>
+                <tr class="product-list">
+                    <td>{{ products['id'] }}</td>
+                    <td>{{ products['name'] }}</td>
+                    <td>{{ products['brand'] }}</td>
+                    <td>${{ products['price'] }}</td>
+                    <td>{{ products['description'] }}</td>
+                    <td>{{ products['image'] }}</td>
+                    <td>{{ products['offer'] }}</td>
+                    <td>
+                        <div class="d-buttons">
+                            <form method="POST" onsubmit="return confirm('Do you want to delete item id: {{ products['id'] }}')">
+                                <div style="display:none"><input type="text" name="function" value="delete"></div>
+                                <button class="delete-btn" type="submit" value="{{ products['id'] }}" name="submit">Delete</button>
+                            </form>
+                            <form method="GET">
+                                <button class="delete-btn" data-toggle="modal" data-target="#modal" type="button">Update</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+{% endblock %}

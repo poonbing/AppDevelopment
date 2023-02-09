@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+{% block title %} Retrieve Tutorial {% endblock %}
+{% block content %}
+{% from "formHelper.html" import render_field %}
+
+<div class="ctn">
+    <div class="ctn-row">
+        <div class="ctn-row-col">
+            <div class="product-header">
+                <h2>Create New Tutorial <button type="button" class="add-new-product"
+                data-toggle="modal" data-target="#mymodal">Add New Video</button></h2>
+
+
+            <!----- Add new product ------->
+                <div id="mymodal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add New Video</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="" method="POST">
+
+                                    <div class="form-group">
+                                        {{ form.name.label }}
+                                        <br>
+                                        {{ form.name }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.difficulty.label }}
+                                        <br>
+                                        {{ form.difficulty }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.type.label }}
+                                        <br>
+                                        {{ form.type }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.video.label }}
+                                        <br>
+                                        {{ form.video }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.thumbnail.label }}
+                                        <br>
+                                        {{ form.thumbnail }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit" name="submit" value="create">Add New Video</button>
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                                    <!-------- Tutorial table list ------->
+            <table class="product-table">
+                <tr class="table-header">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Difficulty</th>
+                    <th>Type</th>
+                    <th>Video Path</th>
+                    <th>Thumbnail</th>
+                    <th>Action</th>
+                </tr>
+
+                <!------ Update button function ------>
+            {% for video in tutorial_list %}
+
+                <!----- product table list ------>
+                <tr class="product-list">
+                    <td>{{ video['id'] }}</td>
+                    <td>{{ video['name'] }}</td>
+                    <td>{{ video['difficulty'] }}</td>
+                    <td>{{ video['type'] }}</td>
+                    <td>{{ video['video'] }}</td>
+                    <td>{{ video['thumbnail'] }}</td>
+                    <td>
+                        <div class="d-buttons">
+                            <form method="POST" onsubmit="return confirm('Do you want to delete item id: {{ video['id'] }}')">
+                                <div style="display:none"><input type="text" name="function" value="delete"></div>
+                                <button class="delete-btn" type="submit" value="{{ video['id'] }}" name="submit">Delete</button>
+                            </form>
+                            <form method="GET">
+                                <button class="delete-btn" data-toggle="modal" data-target="#modal" type="button">Update</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+
+
+{% endblock %}
