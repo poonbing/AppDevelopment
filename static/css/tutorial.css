@@ -1,0 +1,171 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+
+
+
+.header{
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.side-bar{
+    margin-top: 90px;
+    background: grey;
+    backdrop-filter: blur(15px);
+    width: 290px;
+    height: 100vh;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: -100%;
+    overflow-y: auto;
+    transition: 0.6s ease;
+    transition-property: left;
+}
+
+.side-bar.active{
+    left: 0;
+}
+
+.sub-btn.active{
+    background: #8621F8;
+}
+
+
+.side-bar .menu{
+    width: 100%;
+    margin-top: 80px;
+}
+
+.side-bar .menu .item{
+    position: relative;
+    cursor: pointer;
+}
+
+.side-bar .menu .item a{
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+    display: block;
+    padding: 5px 30px;
+    line-height: 60px;
+}
+
+.side-bar .menu .item a:hover{
+    background: #8621F8;
+    transition: 0.3s ease;
+}
+
+.side-bar .menu .item a .dropdown{
+    position: absolute;
+    right: 0;
+    margin: 20px;
+    transition: 0.3s ease;
+}
+
+.side-bar .menu .item .sub-menu{
+    background: rgba(255, 255, 255, 0.1);
+    display: none;
+
+}
+
+.side-bar .menu .item .sub-menu a{
+    padding-left: 80px;
+}
+
+.rotate{
+    transform: rotate(90deg);
+}
+
+.close-btn{
+    position: absolute;
+    color: white;
+    font-size: 20px;
+    right: 0;
+    margin: 20px;
+    cursor: pointer;
+}
+
+.menu-btn{
+    padding: 10px;
+    position: absolute;
+    top: 70px;
+    color: white;
+    background: black;
+    font-size: 30px;
+    margin-top: 24px;
+    cursor: pointer;
+}
+
+
+.tutorial-ctn{
+    margin: auto;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 10px;
+}
+
+.tutorial-ctn .ctn-row{
+    width: 50%;
+}
+
+
+.watch-vid-btn{
+    color: black;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+.watch-vid-btn a{
+    color: black;
+}
+.watch-vid-btn:hover{
+    color: white;
+    background: black;
+    transition: ease-in-out 0.3s;
+}
+
+.watch-vid-btn a:hover{
+    color: white;
+}
+
+
+.Beginner{
+    text-align: center;
+    color: white;
+    background: #19543E;
+    font-size: 14px;
+}
+
+.Intermediate{
+    text-align: center;
+    color: white;
+    background: #8B8000;
+    font-size: 14px;
+}
+
+.Advanced{
+    text-align: center;
+    color: white;
+    background: maroon;
+    font-size: 14px;
+}
+
+
+
+
