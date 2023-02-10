@@ -19,7 +19,7 @@
                                 <h4 class="modal-title">Add New Video</h4>
                             </div>
                             <div class="modal-body">
-                                <form action="" method="POST">
+                                <form method="POST" enctype="multipart/form-data">
 
                                     <div class="form-group">
                                         {{ form.name.label }}
@@ -42,9 +42,9 @@
                                         {{ form.video }}
                                     </div>
                                     <div class="form-group">
-                                        {{ form.thumbnail.label }}
+                                        {{ form.file.label }}
                                         <br>
-                                        {{ form.thumbnail }}
+                                        {{ form.file }}
                                     </div>
 
                                     <div class="form-group">
@@ -87,12 +87,15 @@
                     <td>{{ video['thumbnail'] }}</td>
                     <td>
                         <div class="d-buttons">
-                            <form method="POST" onsubmit="return confirm('Do you want to delete item id: {{ video['id'] }}')">
+                            <form method="POST" onsubmit="return confirm('Do you want to delete item id: {{ video['id'] }}')" >
                                 <div style="display:none"><input type="text" name="function" value="delete"></div>
                                 <button class="delete-btn" type="submit" value="{{ video['id'] }}" name="submit">Delete</button>
                             </form>
-                            <form method="GET">
-                                <button class="delete-btn" data-toggle="modal" data-target="#modal" type="button">Update</button>
+                            <form method="POST">
+                                <div style="display:none">
+                                    <input type="text" name="function" value="update">
+                                </div>
+                                <button class="delete-btn" type="submit" value="{{ video['id'] }}" name="submit" formaction="">Update</button>
                             </form>
                         </div>
                     </td>

@@ -58,7 +58,7 @@ class CreateTutorial(FlaskForm):
     difficulty = RadioField('Difficulty Lvl:', choices=['Beginner', 'Intermediate', 'Advanced'], validators=[DataRequired()])
     type = RadioField('Type of Video:', choices=['Trick', 'Sleight of Hand', 'Flourishes', 'Non-cards'], validators=[DataRequired()])
     video = StringField('Path of video of Tutorial:', [DataRequired()])
-    thumbnail = StringField('Thumbnail Path:', [DataRequired()])
+    file = FileField("Image:", validators=[FileRequired(), FileAllowed(['jpg', 'png', 'jpeg', 'gif', 'webp'], message='File Type Not Allowed!')])
 
 
 class UpdateTutorial(FlaskForm):
@@ -66,4 +66,4 @@ class UpdateTutorial(FlaskForm):
     difficulty = RadioField('Difficulty Lvl:', choices=['Beginner', 'Intermediate', 'Advanced'])
     type = RadioField('Type of Video:', choices=['Trick', 'Sleight of Hand', 'Flourishes', 'Non-cards'])
     video = StringField('Path of video of Tutorial:')
-    thumbnail = StringField('Thumbnail Path:')
+    file = FileField("Image:", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif', 'webp'], message='File Type Not Allowed!')])

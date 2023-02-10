@@ -78,7 +78,7 @@
 
 body {
   margin: 0;
-  padding-top: 94px;
+  padding-top: 86px;
   font-family: var(--bs-body-font-family);
   font-size: var(--bs-body-font-size);
   font-weight: var(--bs-body-font-weight);
@@ -88,7 +88,6 @@ body {
   background-color: var(--bs-body-bg);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-
 }
 
 hr {
@@ -126,6 +125,7 @@ h2, .h2 {
 @media (min-width: 1200px) {
   h2, .h2 {
     font-size: 2rem;
+    margin-top: 22px
   }
 }
 
@@ -4039,7 +4039,6 @@ textarea.form-control-lg {
   justify-content: space-between;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-
 }
 .navbar > .container,
 .navbar > .container-fluid,
@@ -4053,7 +4052,8 @@ textarea.form-control-lg {
   align-items: center;
   justify-content: space-between;
   background-color: #252525;
-
+  /* background-image: linear-gradient(175deg, black, grey); */
+  /* padding-left: 50px; */
 }
 .navbar-brand {
   padding-top: 0.3125rem;
@@ -4236,8 +4236,8 @@ textarea.form-control-lg {
 }
 @media (min-width: 992px) {
   .navbar-expand-lg {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
+    /* flex-wrap: nowrap; */
+    /* justify-content: center; */
   }
   .navbar-expand-lg .navbar-nav {
     flex-direction: row;
@@ -11345,7 +11345,9 @@ p {
 #mainNav {
   padding-top: 1rem;
   padding-bottom: 1rem;
-  background-color: #212529;
+  background-color: ;
+  background-color: #252525;
+  /* background-image: linear-gradient(190deg, black, #252525); */
 }
 
 #mainNav .navbar-toggler {
@@ -11384,8 +11386,11 @@ p {
     transition: padding-top 0.3s ease-in-out, padding-bottom 0.3s ease-in-out;
   }
   #mainNav .navbar-brand {
-    font-size: 1.5em;
+    font-size: 26px;
+    margin-left: 22px;
+    position: absolute;
     transition: font-size 0.3s ease-in-out;
+    left: 0;
   }
   #mainNav .navbar-brand img {
     height: 2rem;

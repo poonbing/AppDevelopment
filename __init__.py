@@ -63,6 +63,15 @@ def unique_id(type):
             return unique_id(type)
         else:
             return output
+    elif type == 'tutorial':
+        kind = 'T'
+        db = retrieve_db('Tutorial', 'video')
+        keys = db.keys()
+        output = kind+idc
+        if output in keys:
+            return unique_id(type)
+        else:
+            return output
 
 
 def generate_receipt():
@@ -109,8 +118,22 @@ def homepage():
         for c in range(0, 8):
             product = data[c]
             newitems.append(product)
+        all_product_list = []
+        accessories_db = retrieve_db('products', 'accessories')
+        accessories_info = list(accessories_db.values())
+        product_info = list(db.values())
+        for items in accessories_info:
+            all_product_list.append(items)
+        for deck in product_info:
+            all_product_list.append(deck)
+
+        product_amount = len(all_product_list)
+        products = random.sample(all_product_list, product_amount)
+
         amount = session['cart']
-        return render_template('home.html', top_items=topitems, new_items=newitems, amount=amount)
+
+        return render_template('home.html', top_items=topitems, new_items=newitems, amount=amount, products=products)
+
 
 
 @app.route('/decks_database', methods=['GET', 'POST', 'PUT'])
@@ -457,23 +480,28 @@ def retrieve_accessories():
 
 @app.route('/createTutorial', methods=['POST', 'GET'])
 def create_tutorial():
-    form = CreateTutorial(request.form)
+    form = CreateTutorial()
     if request.method == 'POST':
         if request.form.get('submit') == 'create':
-            video = {
-                'id': current_count('Tutorial', 'video'),
-                'name': form.name.data,
-                'difficulty': form.difficulty.data,
-                'type': form.type.data,
-                'video': form.video.data,
-                'thumbnail': form.thumbnail.data,
-            }
-            db = retrieve_db('Tutorial', 'video')
-            db[current_count('Tutorial', 'video')] = video
-            commit_db('Tutorial', 'video', db)
-            print('created')
-            return redirect(url_for('create_tutorial'))
-        elif request.form.get('submit') in retrieve_db('Tutorial', 'video'):
+            file = form.file.data
+            if form.file.data is not None:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+                uid = unique_id('tutorial')
+                video = {
+                    'id': uid,
+                    'name': form.name.data,
+                    'difficulty': form.difficulty.data,
+                    'type': form.type.data,
+                    'video': form.video.data,
+                    'thumbnail': filename,
+                }
+                db = retrieve_db('Tutorial', 'video')
+                db[uid] = video
+                commit_db('Tutorial', 'video', db)
+                print('created')
+                return redirect(url_for('create_tutorial'))
+        elif request.form.get('function') == 'delete':
             print(request.form.get('submit'))
             if request.form.get('function') == "delete":
                 delete_id = request.form.get('submit')
@@ -492,12 +520,52 @@ def create_tutorial():
                 commit_db('Tutorial', 'video', product_list)
                 print("deleted")
                 return redirect(url_for('create_tutorial'))
+        elif request.form.get('function') == 'update':
+            db = retrieve_db('Tutorial', 'video')
+            print(db)
+            pid = request.form.get('submit')
+            item = db[pid]
+            form = UpdateTutorial()
+            amount = session['cart']
+            return render_template('tutorial-update.html', video=item, form=form, amount=amount)
     else:
         video = retrieve_db('Tutorial', 'video')
         tutorial_list = video.values()
         amount = session['cart']
         return render_template('createTutorial.html', form=form, tutorial_list=tutorial_list, video=video, amount=amount)
 
+
+
+@app.route('/tutorialupdate', methods=['POST', 'GET'])
+def update_tutorial_info():
+    form = UpdateTutorial()
+    if request.method == "POST":
+        db = retrieve_db('Tutorial', 'video')
+        uid = request.form.get('product_id')
+        print(uid)
+        product = db[uid]
+        if form.file.data is not None:
+            file = form.file.data
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+            product['image'] = filename
+        if form.name.data != "":
+            product['name'] = form.name.data
+            print('name')
+        elif form.difficulty.data is not None:
+            product['difficulty'] = form.difficulty.data
+            print('difficulty')
+        elif form.type.data is not None:
+            product['type'] = form.type.data
+        elif form.video.data is not None:
+            product['video'] = form.video.data
+        uid = str(uid)
+        db[uid] = product
+        commit_db('Tutorial', 'video', db)
+        print("updated")
+        return redirect(url_for('create_tutorial'))
+    else:
+        return render_template('tutorial-update.html', form=form)
 
 @app.route('/tutorials', methods=['POST', 'GET'])
 def receive_tutorial():
@@ -508,6 +576,38 @@ def receive_tutorial():
         tutorial_list.append(video)
     amount = session['cart']
     return render_template('tutorial.html', tutorial_list=tutorial_list, amount=amount)
+
+
+@app.route('/Promotion', methods=['POST', 'GET'])
+def retrieve_promotion():
+    promotion_list = []
+    product_db = retrieve_db('products', 'decks')
+    product_info = list(product_db.values())
+    for deck in product_info:
+        if deck['offered price'] != deck['price']:
+            promotion_list.append(deck)
+        else:
+            pass
+    accessories_db = retrieve_db('products', 'accessories')
+    accessories_info = list(accessories_db.values())
+    for items in accessories_info:
+        if items['offered price'] != items['price']:
+            promotion_list.append(items)
+        else:
+            pass
+
+    if request.method == 'POST':
+        product_id = request.form.get("id")
+        print(product_id)
+        session['id'] = product_id
+        return redirect(url_for('product_page'))
+
+    print(promotion_list)
+
+
+
+    return render_template('retrievePromotion.html', promotion_list=promotion_list)
+
 
 
 if __name__ == '__main__':
