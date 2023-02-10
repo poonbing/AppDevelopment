@@ -225,7 +225,7 @@ def retrieve_luxury():
         product_list = retrieve_db('products', 'decks')
         product_id = request.form.get("id")
         print(product_id)
-        product = [product_list[product_id]]
+        product = product_list[product_id]
         print(product)
         amount = session['cart']
         return render_template("product-index.html", products=product, amount=amount)
@@ -248,7 +248,7 @@ def retrieve_classic():
         product_list = retrieve_db('products', 'decks')
         product_id = request.form.get("id")
         print(product_id)
-        product = [product_list[product_id]]
+        product = product_list[product_id]
         print(product)
         amount = session['cart']
         return render_template("product-index.html", products=product, amount=amount)
@@ -271,7 +271,7 @@ def retrieve_cardistry():
         product_list = retrieve_db('products', 'decks')
         product_id = request.form.get("id")
         print(product_id)
-        product = [product_list[product_id]]
+        product = product_list[product_id]
         print(product)
         amount = session['cart']
         return render_template("product-index.html", products=product, amount=amount)
@@ -306,12 +306,12 @@ def product_page():
             return render_template("product-index.html", products=products, amount=amount)
     elif request.method == "POST":
         select_id = request.form.get('submit')
-        print(select_id)
         quantity = request.form.get('quantity')
         db = retrieve_db('user', 'session')
         x = db.keys()
         for i in x:
             key = i
+        session['cart key'] = key
         cart = db[key]['cart']
         if select_id in cart.keys():
             item = cart[select_id]
@@ -505,20 +505,10 @@ def create_tutorial():
             print(request.form.get('submit'))
             if request.form.get('function') == "delete":
                 delete_id = request.form.get('submit')
-                print(delete_id)
                 product = retrieve_db('Tutorial', 'video')
                 cid = str(delete_id)
                 product.pop(cid)
-                count = 0
-                product_list = {}
-                for keys in product:
-                    count += 1
-                    cid = str(count)
-                    item = product[keys]
-                    item['id'] = cid
-                    product_list[cid] = item
-                commit_db('Tutorial', 'video', product_list)
-                print("deleted")
+                commit_db('Tutorial', 'video', product)
                 return redirect(url_for('create_tutorial'))
         elif request.form.get('function') == 'update':
             db = retrieve_db('Tutorial', 'video')
@@ -535,8 +525,7 @@ def create_tutorial():
         return render_template('createTutorial.html', form=form, tutorial_list=tutorial_list, video=video, amount=amount)
 
 
-
-@app.route('/tutorialupdate', methods=['POST', 'GET'])
+@app.route('/tutorial_update', methods=['POST', 'GET'])
 def update_tutorial_info():
     form = UpdateTutorial()
     if request.method == "POST":
@@ -567,6 +556,7 @@ def update_tutorial_info():
     else:
         return render_template('tutorial-update.html', form=form)
 
+
 @app.route('/tutorials', methods=['POST', 'GET'])
 def receive_tutorial():
     db = retrieve_db('Tutorial', 'video')
@@ -595,19 +585,56 @@ def retrieve_promotion():
             promotion_list.append(items)
         else:
             pass
-
     if request.method == 'POST':
         product_id = request.form.get("id")
         print(product_id)
         session['id'] = product_id
         return redirect(url_for('product_page'))
-
     print(promotion_list)
-
-
-
     return render_template('retrievePromotion.html', promotion_list=promotion_list)
 
+
+@app.route('/cart', methods=['POST', 'GET'])
+def retrieve_cart():
+    if request.method == 'GET':
+        db = retrieve_db('user', 'session')
+        decks = retrieve_db('products', 'decks')
+        access = retrieve_db('products', 'accessories')
+        x = db.keys()
+        for i in x:
+            key = i
+        cart = db[key]['cart']
+        keys = cart.keys()
+        cart_list = []
+        for key in keys:
+            item = {}
+            if key[0] == 'D':
+                deck = decks[key]
+                item['id'] = key
+                item['name'] = deck['name']
+                item['type'] = 'Decks'
+                item['quantity'] = cart[key]['quantity']
+                item['price'] = deck['offered price']
+                item['total'] = f"{float(deck['offered price'])*float(cart[key]['quantity']):.2f}"
+                item['image'] = deck['image']
+                cart_list.append(item)
+            elif key[0] == 'A':
+                acc = access[key]
+                item['id'] = key
+                item['name'] = acc['name']
+                item['type'] = 'Accessories'
+                item['quantity'] = cart[key]['quantity']
+                item['price'] = acc['offered price']
+                item['total'] = f"{float(acc['offered price'])*float(cart[key]['quantity']):.2f}"
+                item['image'] = acc['image']
+                cart_list.append(item)
+        count = 0
+        price = 0
+        for i in cart_list:
+            count += int(i['quantity'])
+            price += float(i['total'])
+        amount = session['cart']
+        return render_template('shopping-cart.html', cart_list=cart_list, amount=amount, count=count, total=price)
 
 
 if __name__ == '__main__':
