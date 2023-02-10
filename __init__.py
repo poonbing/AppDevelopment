@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, session
 import shelve
 from Form1 import CreateDeckForm, UpdateDeckForm, CreateTutorial, CreateAccessories, UpdateTutorial, UpdateAccessories
 from Decks import Deck
@@ -86,19 +86,17 @@ def unify_id(shelve_name, key):
     commit_db('products', 'decks', db)
 
 
-print(retrieve_db('products', 'decks'))
+print(retrieve_db('user', 'session'))
 
 
 # --Lewis--:Homepage
 @app.route("/", methods=['GET', 'POST'])
 def homepage():
     if request.method == 'POST':
-        product_list = retrieve_db('products', 'decks')
         product_id = request.form.get("id")
         print(product_id)
-        product = [product_list[product_id]]
-        print(product)
-        return render_template("product-index.html", products=product)
+        session['id'] = product_id
+        return redirect(url_for('product_page'))
     else:
         db = retrieve_db('products', 'decks')
         data = list(db.values())
@@ -111,7 +109,8 @@ def homepage():
         for c in range(0, 8):
             product = data[c]
             newitems.append(product)
-        return render_template('home.html', top_items=topitems, new_items=newitems)
+        amount = session['cart']
+        return render_template('home.html', top_items=topitems, new_items=newitems, amount=amount)
 
 
 @app.route('/decks_database', methods=['GET', 'POST', 'PUT'])
@@ -120,7 +119,8 @@ def decks_database():
     if request.method == "GET":
         product = retrieve_db('products', 'decks')
         product_list = product.values()
-        return render_template('decks-database.html', form=form, product_list=product_list, product=product)
+        amount = session['cart']
+        return render_template('decks-database.html', form=form, product_list=product_list, product=product, amount=amount)
     elif request.method == 'POST':
         if request.form.get('submit') == 'create':
             file = form.file.data
@@ -159,7 +159,8 @@ def decks_database():
             pid = request.form.get('submit')
             item = db[pid]
             form = UpdateDeckForm()
-            return render_template('decks-update.html', id=pid, item=item, form=form)
+            amount = session['cart']
+            return render_template('decks-update.html', id=pid, item=item, form=form, amount=amount)
         else:
             form = UpdateDeckForm()
             db = retrieve_db('products', 'decks')
@@ -203,7 +204,8 @@ def retrieve_luxury():
         print(product_id)
         product = [product_list[product_id]]
         print(product)
-        return render_template("product-index.html", products=product)
+        amount = session['cart']
+        return render_template("product-index.html", products=product, amount=amount)
     else:
         db = retrieve_db('products', 'decks')
         data = list(db.values())
@@ -213,7 +215,8 @@ def retrieve_luxury():
                 products.append(product)
             else:
                 pass
-        return render_template('retrieveluxuryDecks.html', products=products)
+        amount = session['cart']
+        return render_template('retrieveluxuryDecks.html', products=products, amount=amount)
 
 
 @app.route('/retrieveclassicDecks', methods=['GET', 'POST'])
@@ -224,7 +227,8 @@ def retrieve_classic():
         print(product_id)
         product = [product_list[product_id]]
         print(product)
-        return render_template("product-index.html", products=product)
+        amount = session['cart']
+        return render_template("product-index.html", products=product, amount=amount)
     else:
         db = retrieve_db('products', 'decks')
         data = list(db.values())
@@ -234,7 +238,8 @@ def retrieve_classic():
                 products.append(product)
             else:
                 pass
-        return render_template('retrieveclassicDecks.html', products=products)
+        amount = session['cart']
+        return render_template('retrieveclassicDecks.html', products=products, amount=amount)
 
 
 @app.route('/retrievecardistryDecks', methods=['GET', 'POST'])
@@ -245,7 +250,8 @@ def retrieve_cardistry():
         print(product_id)
         product = [product_list[product_id]]
         print(product)
-        return render_template("product-index.html", products=product)
+        amount = session['cart']
+        return render_template("product-index.html", products=product, amount=amount)
     else:
         db = retrieve_db('products', 'decks')
         data = list(db.values())
@@ -255,7 +261,8 @@ def retrieve_cardistry():
                 products.append(product)
             else:
                 pass
-        return render_template('retrievecardistryDecks.html', products=products)
+        amount = session['cart']
+        return render_template('retrievecardistryDecks.html', products=products, amount=amount)
 # --Lewis--:Homepage end
 
 
@@ -263,28 +270,58 @@ def retrieve_cardistry():
 @app.route('/product_page', methods=['POST', 'GET'])
 def product_page():
     if request.method == 'GET':
+        product_id = session['id']
         product_list = retrieve_db('products', 'decks')
-        product_id = request.form['id']
-        product = product_list[product_id]
-        products = [Deck(product['id'], product['name'], product['brand'], product['type'], product['description'], product['price'], product['image'], product['offer'])]
-        return render_template("product-index.html", products=products)
-    if request.method == "POST":
-        select_id = request.form.get('select id')
+        access_list = retrieve_db('products', 'accessories')
+        if product_id in product_list:
+            products = product_list[product_id]
+            amount = session['cart']
+            return render_template("product-index.html", products=products, amount=amount)
+        elif product_id in access_list:
+            products = access_list[product_id]
+            amount = session['cart']
+            return render_template("product-index.html", products=products, amount=amount)
+    elif request.method == "POST":
+        select_id = request.form.get('submit')
+        print(select_id)
         quantity = request.form.get('quantity')
-        db = retrieve_db('user', 'cart')
-        if select_id in db:
-            existing = db[select_id]
-            quantity = int(existing)+int(quantity)
-            db[select_id] = int(quantity)
-            print(db)
-            commit_db('user', 'cart', db)
-        elif select_id not in db:
-            db[select_id] = int(quantity)
-            print(db)
-            commit_db('user', 'cart', db)
+        db = retrieve_db('user', 'session')
+        x = db.keys()
+        for i in x:
+            key = i
+        cart = db[key]['cart']
+        if select_id in cart.keys():
+            item = cart[select_id]
+            existing = item['quantity']
+            quantity = int(int(existing)+int(quantity))
+            item['quantity'] = quantity
+            price = item['price']
+            total = f'{float(float(price)*int(quantity)):.2f}'
+            item['total'] = total
+            cart[select_id] = item
+            commit_db('user', 'session', db)
+        elif select_id not in cart.keys():
+            price = request.form.get('price')
+            total = f'{float(float(price)*int(quantity)):.2f}'
+            item = {
+                'id': select_id,
+                'quantity': quantity,
+                'price': price,
+                'total': total,
+                'brand': request.form.get('brand')
+            }
+            db[key]['cart'][select_id] = item
+            commit_db('user', 'session', db)
         product_list = retrieve_db('products', 'decks')
-        products = [product_list[select_id]]
-        return render_template("product-index.html", products=products)
+        access_list = retrieve_db('products', 'accessories')
+        if select_id in product_list:
+            products = product_list[select_id]
+        elif select_id in access_list:
+            products = access_list[select_id]
+        amount = len(cart.keys())
+        session['cart'] = amount
+        amount = session['cart']
+        return render_template("product-index.html", products=products, amount=amount)
 # --BP--:Product view end
 
 
@@ -295,7 +332,8 @@ def accessories_database():
         form = UpdateAccessories()
         product = retrieve_db('products', 'accessories')
         product_list = product.values()
-        return render_template('accessories-database.html', form=form, product_list=product_list, product=product)
+        amount = session['cart']
+        return render_template('accessories-database.html', form=form, product_list=product_list, product=product, amount=amount)
     elif request.method == 'POST':
         if request.form.get('submit') == 'create':
             print('creating')
@@ -332,7 +370,8 @@ def accessories_database():
             pid = request.form.get('submit')
             item = db[pid]
             form = UpdateDeckForm()
-            return render_template('accessories-update.html', item=item, form=form)
+            amount = session['cart']
+            return render_template('accessories-update.html', item=item, form=form, amount=amount)
         else:
             db = retrieve_db('products', 'accessories')
             uid = request.form.get('submit')
@@ -395,25 +434,25 @@ def update_accessories_info():
         print("updated")
         return redirect(url_for('accessories_database'))
     else:
-        return render_template("accessories-update.html", form=form)
+        amount = session['cart']
+        return render_template("accessories-update.html", form=form, amount=amount)
 
 
 @app.route('/accessories', methods=['GET', 'POST'])
 def retrieve_accessories():
     if request.method == 'POST':
-        product_list = retrieve_db('products', 'accessories')
         product_id = request.form.get("id")
         print(product_id)
-        product = [product_list[product_id]]
-        print(product)
-        return render_template("product-index.html", products=product)
+        session['id'] = product_id
+        return redirect(url_for('product_page'))
     else:
         db = retrieve_db('products', 'accessories')
         data = list(db.values())
         products = []
         for product in data:
             products.append(product)
-        return render_template('accessories.html', products=products)
+        amount = session['cart']
+        return render_template('accessories.html', products=products, amount=amount)
 
 
 @app.route('/createTutorial', methods=['POST', 'GET'])
@@ -456,7 +495,8 @@ def create_tutorial():
     else:
         video = retrieve_db('Tutorial', 'video')
         tutorial_list = video.values()
-        return render_template('createTutorial.html', form=form, tutorial_list=tutorial_list, video=video)
+        amount = session['cart']
+        return render_template('createTutorial.html', form=form, tutorial_list=tutorial_list, video=video, amount=amount)
 
 
 @app.route('/tutorials', methods=['POST', 'GET'])
@@ -466,7 +506,8 @@ def receive_tutorial():
     tutorial_list = []
     for video in tutorial:
         tutorial_list.append(video)
-    return render_template('tutorial.html', tutorial_list=tutorial_list)
+    amount = session['cart']
+    return render_template('tutorial.html', tutorial_list=tutorial_list, amount=amount)
 
 
 if __name__ == '__main__':

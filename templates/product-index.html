@@ -12,7 +12,6 @@
 {% block content %}
         <!-- Product section-->
         <section class="py-5">
-            {% for products in products %}
             <div class="container px-4 px-lg-5 my-5">
                 <div class="row gx-4 gx-lg-5 align-items-center">
                     <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{ url_for('static', filename='uploads/'+products['image']) }}" alt="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" /></div>
@@ -31,10 +30,12 @@
                             {{ products['description'] }}
                             {% endautoescape %}
                         </p>
-                        <form action="/product" method="POST">
+                        <form method="POST">
                             <div class="d-flex">
+                                <input type="text" name="price" style="display:none" value="{{ products['price'] }}">
+                                <input type="text" name="brand" style="display:none" value="{{ products['brand'] }}">
                                 <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" name="quantity" />
-                                <button class="btn btn-outline-dark flex-shrink-0" type="submit" value="{{ products['id'] }}" name="select id">
+                                <button class="btn btn-outline-dark flex-shrink-0" type="submit" value="{{ products['id'] }}" name="submit">
                                     <i class="bi-cart-fill me-1"></i>
                                     Add to cart
                                 </button>
@@ -43,7 +44,6 @@
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </section>
 
         <!-- Related items section-->
