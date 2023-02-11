@@ -1,0 +1,32 @@
+/*
+
+font-family: 'Montserrat', sans-serif;
+font-family: 'Raleway', sans-serif;
+
+*/
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+
+}
+:root{
+    --heading:
+    'Monserrat'
+    sans-serif;
+
+}
+body{
+    font-family: 'Raleway', sans-serif;
+    background: white;
+}
+
+/* background css */
+body{
+    background:url(/static/assets/img/black.png);
+}
+
+.main-body{
+    margin-top: 130px;
+}
+

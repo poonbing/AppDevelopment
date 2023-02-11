@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Register Page</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" href="\static\css\UserInt_Signup.css">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+    {% block navbar %}
+        {% include 'includes/UserInt_navbar.html' %}
+    {% endblock %}
+
+    <div class="container-signup">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                    <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                    <div class="col-lg-7">
+
+
+                        <!--Email already exists validation-->
+                        {% if 'email_exist' in session %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            {{ session.pop('email_exist') }}.
+                        </div>
+                        {% endif %}
+
+                        <!--Admin creation validation-->
+                        {% if 'banned_email' in session %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            {{ session.pop('banned_email') }}
+                        </div>
+                        {% endif %}
+
+                        <!--Account created validation-->
+                        {% if 'account_created' in session %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            Account for {{ session.pop('account_created') }} successfully created.
+                        </div>
+                        {% endif %}
+
+                        <div class="p-5">
+
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                            </div>
+
+                            {% from "includes/UserInt_formHelper.html" import render_field %}
+                            <form method="post" class="user">
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        {{ render_field(form.first_name, class="form-control form-control-user") }}
+                                    </div>
+                                    <div class="col-sm-6">
+                                        {{ render_field(form.last_name, class="form-control form-control-user") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        {{ render_field(form.username, class="form-control form-control-user") }}
+                                    </div>
+                                    <div class="col-sm-6">
+                                        {{ render_field(form.contact, class="form-control form-control-user", oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ render_field(form.email, class="form-control form-control-user") }}
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        {{ render_field(form.gender, class="form-control form-control-user") }}
+                                    </div>
+                                    <div class="col-sm-6">
+                                        {{ render_field(form.dob, class="form-control form-control-user") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        {{ render_field(form.password, class="form-control no-border form-control-user") }}
+                                    </div>
+                                    <div class="col-sm-6">
+                                        {{ render_field(form.confirm_password, class="form-control form-control-user") }}
+                                    </div>
+                                </div>
+
+                                <a href="/profile">
+                                    <input type="submit" value="CREATE ACCOUNT" class="btn hero-btn btn-primary btn-user btn-block">
+                                </a>
+
+                                <hr>
+
+                            </form>
+                            <hr>
+                            <div class="text-center">
+                                <a class="small" href="/">Forgot Password?</a>
+                            </div>
+                            <div class="text-center">
+                                Already have an Account? <a class="small" href="/">Login</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="\static\vendor\jquery\jquery.min.js"></script>
+    <script src="\static\vendor\bootstrap\js\bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="\static\vendor\jquery-easing\jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="\static\js\sb-admin-2.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Login Page</title>
+<!--    Dashboard_css link-->
+    <link href="static\css\Old_UserInt_login.css" rel="stylesheet">
+<!--    Bootstrap CSS-->
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+<!--    Bootstrap JS-->
+    <link rel="stylesheet" href="static/js/bootstrap.js">
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Raleway:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/b17fb1cfab.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    {% block navbar %}
+        {% include 'includes/UserInt_navbar.html' %}
+    {% endblock %}
+
+    <div class="center">
+
+        {% from "includes/UserInt_formHelper.html" import render_field %}
+        <h1>LOGIN</h1>
+        <form method="post">
+            {% if 'wrong_password' in session %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ session.pop('wrong_password') }}.
+        </div>
+        {% endif %}
+          <div class="txt_field">
+              {{render_field(form.email, class="form-control") }}
+          </div>
+          <div class="txt_field">
+              {{render_field(form.password, class="form-control") }}
+          </div>
+          <div class="pass">
+              <a href="/signup">Forgot Password?</a>
+          </div>
+          <div>
+              <a href="/profile"><input type="submit" value="Login" class="hero-btn"></a>
+          </div>
+          <div class="signup_link">
+            New to CardHouse Magic? <a href="/signup">Signup</a>
+          </div>
+        </form>
+      </div>
+
+<!--    {% block footer %}-->
+<!--        {% include 'includes/UserInt_Footer.html' %}-->
+<!--    {% endblock %}-->
+</body>
+</html>
+
+
+
+
+
+
