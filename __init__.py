@@ -129,7 +129,6 @@ def homepage():
 
         product_amount = len(all_product_list)
         products = random.sample(all_product_list, product_amount)
-
         amount = session['cart']
 
         return render_template('home.html', top_items=topitems, new_items=newitems, amount=amount, products=products)
@@ -287,6 +286,7 @@ def retrieve_cardistry():
         amount = session['cart']
         return render_template('retrievecardistryDecks.html', products=products, amount=amount)
 # --Lewis--:Homepage end
+
 
 
 # --BP--:Product view start
