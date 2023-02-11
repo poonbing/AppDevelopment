@@ -1,15 +1,25 @@
-from flask import Flask, render_template, request, url_for, redirect, session
+from flask import Flask, render_template, request, url_for, redirect, session, g
 import shelve
+from Forms import signUp, Login, update, ForgetPassword
 from Form1 import CreateDeckForm, UpdateDeckForm, CreateTutorial, CreateAccessories, UpdateTutorial, UpdateAccessories
-from Decks import Deck
+from uuid import uuid4
 import random
 from werkzeug.utils import secure_filename
 import os
-
+import os.path
+from flask_mail import Mail,Message
+import Customers
 
 app = Flask('__name__', template_folder='./templates/')
 app.config['SECRET_KEY'] = 'SecretKey'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'appdevresetpw@gmail.com'
+app.config['MAIL_PASSWORD'] = 'ydhqmpownjvqdnxl'
+mail = Mail(app)
 
 
 def retrieve_db(shelve_name, key):
@@ -98,6 +108,21 @@ def unify_id(shelve_name, key):
 print(retrieve_db('user', 'session'))
 
 
+@app.before_request
+def get_current_user():
+    customers_dict = {}
+    db = shelve.open('customers.db', 'r')
+    try:
+        customers_dict = db['Customers']
+    except:
+        print("error bitch")
+
+    try:
+        g.current_user = customers_dict[session['current_user']]
+    except KeyError:
+        g.current_user = None
+
+
 # --Lewis--:Homepage
 @app.route("/", methods=['GET', 'POST'])
 def homepage():
@@ -129,6 +154,7 @@ def homepage():
 
         product_amount = len(all_product_list)
         products = random.sample(all_product_list, product_amount)
+        session['cart'] = 0
         amount = session['cart']
 
         return render_template('home.html', top_items=topitems, new_items=newitems, amount=amount, products=products)
@@ -635,6 +661,285 @@ def retrieve_cart():
             price += float(i['total'])
         amount = session['cart']
         return render_template('shopping-cart.html', cart_list=cart_list, amount=amount, count=count, total=price)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    login_form = Login(request.form)
+    if request.method == 'POST' and login_form.validate():
+        emails = []
+        customers_dict = {}
+        db = shelve.open('customers.db', 'c')
+        session_dict = shelve.open('session.db', 'c')
+        user_id_dict = {}
+        try:
+            if 'current_session' in session_dict:
+                user_id_dict = session_dict['current_session']
+            else:
+                session_dict['current_session'] = user_id_dict
+        except:
+            print("error")
+
+        try:
+            customers_dict = db['Customers']
+        except:
+            print("error in retrieving db")
+
+        for key in customers_dict:
+            customer = customers_dict.get(key)
+            email = customer.get_email()
+            password = customer.get_password()
+            userid = customer.get_customer_id()
+
+            if login_form.email.data == email:
+                if login_form.password.data == password:
+                    if email.split('@')[1] == "cardhouse.com":
+                        session['current_user'] = customer.get_customer_id()
+                        return redirect(url_for('AdminDashboard'))
+                    else:
+                        user_id_dict['user_id'] = userid
+                        session_dict['current_session'] = user_id_dict
+                        customers_dict[customer.get_customer_id()] = customer
+                        db['Customers'] = customers_dict
+                        session['login_success'] = customer.get_email()
+                        print("logged in")
+                        db.close()
+                        return redirect(url_for('profile'))
+
+                else:
+                    session['wrong_password'] = "WRONG PASSWORD"
+                    print("wrong password")
+            else:
+                print("email dont exist")
+        session['email_dont_exist'] = "EMAIL DOES NOT EXIST"
+
+    return render_template('/UserInt_Login.html', form=login_form)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    signup_form = signUp(request.form)
+    if request.method == 'POST' and signup_form.validate():
+        emails = []
+        customers_dict = {}
+        db = shelve.open('customers.db', 'c')
+
+        try:
+            customers_dict = db['Customers']
+        except:
+            print("error in retrieving db")
+
+        for key in customers_dict:
+            customer = customers_dict.get(key)
+            emails.append(customer.get_email())
+
+        temp_id = str(random.randint(100, 999))
+
+
+        print(signup_form.email.data, emails)
+        if signup_form.email.data.split('@')[1] == "cardhouse.com":
+            session['banned_email'] = "Emails cannot end with '@cardhouse.com'"
+            return redirect(url_for('signup'))
+
+        elif signup_form.email.data in emails:
+            session['email_exist'] = 'already exists'
+            return redirect(url_for('signup'))
+        else:
+            customer = Customers.Customers("U"+temp_id,
+                                          signup_form.first_name.data,
+                                          signup_form.last_name.data,
+                                          signup_form.email.data,
+                                          signup_form.username.data,
+                                          signup_form.password.data,
+                                          signup_form.contact.data,
+                                          signup_form.gender.data,
+                                          signup_form.dob.data)
+
+        customers_dict[customer.get_customer_id()]=customer
+        db['Customers'] = customers_dict
+        print(customer.get_first_name(), customer.get_last_name(), "was stored in db successfully with user_id ==",
+        customer.get_customer_id())
+        db.close()
+
+        session['account_created'] = signup_form.email.data
+
+    return render_template('/UserInt_signup.html', form=signup_form)
+
+
+@app.route('/profile')
+def profile():
+    customers_dict = {}
+    customer = ""
+    db = shelve.open('customers.db', 'r')
+    customers_dict = db['Customers']
+    for key in customers_dict:
+        print(session['login_success'], customers_dict.get(key).get_email())
+        if session['login_success'] == customers_dict.get(key).get_email():
+            customer = customers_dict.get(key)
+    return render_template('/UserInt_profile.html', customer=customer)
+
+
+@app.route('/customers')
+def customers():
+    form = update(request.form)
+    db = shelve.open('customers.db', 'r')
+    customers_dict = db['Customers']
+    db.close()
+
+    customers_list = []
+    for key in customers_dict:
+        customer = customers_dict.get(key)
+        if customer.get_email().split('@')[1] != "cardhouse.com":
+            customers_list.append(customer)
+
+    return render_template("/UserInt_customers.html", count=len(customers_list), customers_list=customers_list, form=form, customer=customer)
+
+@app.route('/admins')
+def admins():
+
+    db = shelve.open('customers.db', 'r')
+    customers_dict = db['Customers']
+    db.close()
+
+    customers_list = []
+    for key in customers_dict:
+        customer = customers_dict.get(key)
+        if customer.get_email().split('@')[1] == "cardhouse.com":
+            customers_list.append(customer)
+
+    return render_template("/UserInt_admin.html", count=len(customers_list), customers_list=customers_list)
+
+
+@app.route('/updateCustomer/<id>/', methods=['POST'])
+def update_user(id):
+    form = update(request.form)
+    if request.method == 'POST' and form.validate():
+        emails = []
+        customers_dict = {}
+        db = shelve.open('customers.db', 'w')
+        customers_dict = db['Customers']
+
+        customer = customers_dict.get(id)
+        customer.set_first_name(form.first_name.data)
+        customer.set_last_name(form.last_name.data)
+        customer.set_username(form.username.data)
+        customer.set_contact(form.contact.data)
+        customer.set_gender(form.gender.data)
+        customer.set_dob(form.dob.data)
+
+
+        db['Customers'] = customers_dict
+        db.close()
+
+        return redirect(url_for('customers'))
+
+
+
+@app.route('/deleteCustomer/<id>', methods=['POST'])
+def delete_customer(id):
+    customers_dict = {}
+    db = shelve.open('customers.db', 'w')
+    customers_dict = db['Customers']
+    customers_dict.pop(id)
+    db['Customers'] = customers_dict
+    db.close()
+    return redirect(url_for('customers'))
+
+
+@app.route('/Cart', methods=['GET', 'POST'])
+def Shopcart():
+    return render_template('/UserInt_Cart.html')
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.pop('login_success', None)
+    return redirect(url_for('login'))
+
+
+@app.route('/AdminDash', methods=['GET', 'POST'])
+def AdminDashboard():
+    return render_template('/UserInt_AdminDash.html')
+
+# @app.route('/ForgetPassword', methods=['GET', 'POST'])
+# def ForgetPassword():
+    # forget_password_form = ForgetPassword(request.form)
+    # if request.method == 'POST' and forget_password_form.validate():
+    #     accounts = []
+    #     accounts_dict = {}
+    #     db = shelve.open('customers.db', 'c')
+    #     try
+    #         accounts_dict = db['Customers']
+    #     except:
+    #         print("error")
+    #
+    #     for key in accounts_dict:
+    #         customer = accounts_dict.get(key)
+    #         accounts.append(customer)
+    #
+    #     for customer in accounts:
+    #         if forget_password_form.email.data == customer.get_email():
+    #             temporary_password = str(uuid4())[:8]
+    #             customer.set_password(temporary_password)
+    #             accounts_dict[customer.get_customer_id()] = customer
+    #             db['Customers'] = accounts_dict
+    #             db.close()
+    #             msg = Message('Your new password', sender='appdevprojectsss@gmail.com', recipients=[forget_password_form.email.data])
+    #             msg.html = render_template('email.html', temporary_password=temporary_password)
+    #             mail.send(msg)
+    #             session['email_sent'] = forget_password_form.email.data
+    #             return redirect(url_for('login'))
+    #         session['emailnotfound'] = "EMail not found"
+    #         return redirect(url_for('password'))
+    # else:
+    #     print("error")
+
+    # return render_template('/UserInt_forgotpass.html', form=forget_password_form)
+
+
+@app.route('/AdminDashChart', methods=['GET', 'POST'])
+def AdminDashboardChart():
+    return render_template('/Dashboard/UserInt_AdminDash_charts.html')
+
+@app.route('/Forgotpass', methods=['GET', 'POST'])
+def Forgotpassword():
+    forget_password_form = ForgetPassword(request.form)
+    if request.method == 'POST' and forget_password_form.validate():
+        accounts = []
+        accounts_dict = {}
+        db = shelve.open('customers.db', 'c')
+        try:
+            accounts_dict = db['Customers']
+        except:
+            print("error opening db")
+
+        for key in accounts_dict:
+            customer = accounts_dict.get(key)
+            accounts.append(customer)
+
+        for customer in accounts:
+            print("Hello", customer.get_email())
+            if forget_password_form.email.data == customer.get_email():
+                temporary_password = str(uuid4())[:8]
+                customer.set_password(temporary_password)
+                accounts_dict[customer.get_customer_id()] = customer
+                db['Customers'] = accounts_dict
+                db.close()
+                msg = Message('Your new password', sender='appdevprojectsss@gmail.com', recipients=[forget_password_form.email.data])
+                msg.html = render_template('email.html', temporary_password=temporary_password)
+                mail.send(msg)
+                session['email_sent'] = forget_password_form.email.data
+                return redirect(url_for('login'))
+        session['emailnotfound'] = "Email not found"
+        return redirect(url_for('Forgotpassword'))
+    else:
+        print("not validating")
+
+    return render_template('/UserInt_forgot.html', form=forget_password_form)
+
+# @app.route('/AdminDashTable', methods=['GET', 'POST'])
+# def AdminDashboardTable():
+#     return render_template('/Dashboard/UserInt_customers.html')
 
 
 if __name__ == '__main__':
