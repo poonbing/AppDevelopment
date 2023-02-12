@@ -2,16 +2,15 @@
 {% block title %}Library Loan System - Retrieve Users{% endblock %}
 {% block content %}
 
-        <!---- Header ------>
+
         <header class="bg-dark py-5">
             <div class="container px-4 px-lg-5 my-5">
                 <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Luxury Decks</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">High quality playing cards!</p>
+                    <h1 class="display-4 fw-bolder">All Decks</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Add them to your collection!</p>
                 </div>
             </div>
         </header>
-
         <!-- Section-->
         <section class="py-5">
             <div class="container px-4 px-lg-5 mt-5">
@@ -51,7 +50,7 @@
                                 <!-- Product actions-->
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                     <div class="text-center">
-                                        <form method="POST">
+                                        <form action="/" method="POST">
                                             <button class="btn btn-outline-dark flex-shrink-0" type="submit" value="{{ item['id'] }}" name="id">View Option</button>
                                         </form>
                                     </div>
@@ -62,70 +61,4 @@
                 </div>
             </div>
         </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-----
-<div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Product ID</th>
-                <th>Name</th>
-                <th>Brand</th>
-                <th>Price</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for deck in products %}
-                <tr>
-                    <td></td>
-                    <td>{{ deck['name'] }}</td>
-                    <td>{{ deck['brand'] }}</td>
-                    <td>{{ deck['price'] }}</td>
-                    <td><a href="#" class="btn btn-warning">Update</a></td>
-                    <td><form action="" method="POST"><input type="submit" value="Delete" class="btn btn-danger"></form></td>
-                    <td>
-                      <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit">Edit</a>
-                      <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure to Delete')">Delete</a>
-                    </td>
-                    </tr>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 {% endblock %}
-
--->

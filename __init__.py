@@ -36,9 +36,10 @@ def commit_db(shelve_name, key, new_list):
 
 
 def current_count(shelve_name, key):
-    db = retrieve_db(shelve_name, key)
+    with shelve.open(shelve_name) as db:
+        output = db[key]
     count = 1
-    for keys in db:
+    for keys in output:
         count += 1
     counter = str(count)
     return counter
@@ -105,9 +106,6 @@ def unify_id(shelve_name, key):
     commit_db('products', 'decks', db)
 
 
-print(retrieve_db('user', 'session'))
-
-
 @app.before_request
 def get_current_user():
     customers_dict = {}
@@ -128,7 +126,6 @@ def get_current_user():
 def homepage():
     if request.method == 'POST':
         product_id = request.form.get("id")
-        print(product_id)
         session['id'] = product_id
         return redirect(url_for('product_page'))
     else:
@@ -151,14 +148,19 @@ def homepage():
             all_product_list.append(items)
         for deck in product_info:
             all_product_list.append(deck)
-
         product_amount = len(all_product_list)
         products = random.sample(all_product_list, product_amount)
-        session['cart'] = 0
+        shopping = retrieve_db('user', 'session')
+        x = shopping.keys()
+        for i in x:
+            cart = shopping[i]['cart']
+        count = 0
+        if len(cart) != 0:
+            for item in cart:
+                count += 1
+        session['cart'] = count
         amount = session['cart']
-
         return render_template('home.html', top_items=topitems, new_items=newitems, amount=amount, products=products)
-
 
 
 @app.route('/decks_database', methods=['GET', 'POST', 'PUT'])
@@ -190,16 +192,13 @@ def decks_database():
                 db = retrieve_db('products', 'decks')
                 db[uid] = product
                 commit_db('products', 'decks', db)
-                print('created')
                 return redirect(url_for('decks_database'))
             else:
                 return redirect(url_for('decks_database'))
         elif request.form.get('function') == 'delete':
             delete_id = request.form.get('submit')
-            print(delete_id)
             db = retrieve_db('products', 'decks')
             db.pop(delete_id)
-            print(db)
             commit_db('products', 'decks', db)
             return redirect(url_for('decks_database'))
         elif request.form.get('function') == 'update':
@@ -213,7 +212,6 @@ def decks_database():
             form = UpdateDeckForm()
             db = retrieve_db('products', 'decks')
             uid = request.form.get('submit')
-            print(uid)
             product = db[uid]
             if form.file.data is not None:
                 file = form.file.data
@@ -222,59 +220,28 @@ def decks_database():
                 product['image'] = filename
             if form.name.data != "":
                 product['name'] = form.name.data
-                print('name')
             if form.brand.data != "":
                 product['brand'] = form.brand.data
             if form.type.data is not None:
                 product['type'] = form.type.data
-                print('type')
             if form.description.data != "":
                 product['description'] = form.description.data
-                print('description')
             if form.price.data is not None:
                 product['price'] = f"{form.price.data:.2f}"
-                print('price')
             if form.offer.data is not None:
-                print('offer change')
                 product['offer'] = form.offer.data
                 product['offered price'] = offered_price(product['price'], product['offer'])
             db[uid] = product
             commit_db('products', 'decks', db)
-            print("updated")
             return redirect(url_for('decks_database'))
 
 
-@app.route('/retrieveluxuryDecks', methods=['GET', 'POST'])
-def retrieve_luxury():
-    if request.method == 'POST':
-        product_list = retrieve_db('products', 'decks')
-        product_id = request.form.get("id")
-        print(product_id)
-        product = product_list[product_id]
-        print(product)
-        amount = session['cart']
-        return render_template("product-index.html", products=product, amount=amount)
-    else:
-        db = retrieve_db('products', 'decks')
-        data = list(db.values())
-        products = []
-        for product in data:
-            if product['type'] == "Luxury":
-                products.append(product)
-            else:
-                pass
-        amount = session['cart']
-        return render_template('retrieveluxuryDecks.html', products=products, amount=amount)
-
-
-@app.route('/retrieveclassicDecks', methods=['GET', 'POST'])
+@app.route('/retrieveallDecks', methods=['GET', 'POST'])
 def retrieve_classic():
     if request.method == 'POST':
         product_list = retrieve_db('products', 'decks')
-        product_id = request.form.get("id")
-        print(product_id)
+        product_id = session['id']
         product = product_list[product_id]
-        print(product)
         amount = session['cart']
         return render_template("product-index.html", products=product, amount=amount)
     else:
@@ -282,35 +249,9 @@ def retrieve_classic():
         data = list(db.values())
         products = []
         for product in data:
-            if product['type'] == "Classic":
-                products.append(product)
-            else:
-                pass
+            products.append(product)
         amount = session['cart']
-        return render_template('retrieveclassicDecks.html', products=products, amount=amount)
-
-
-@app.route('/retrievecardistryDecks', methods=['GET', 'POST'])
-def retrieve_cardistry():
-    if request.method == 'POST':
-        product_list = retrieve_db('products', 'decks')
-        product_id = request.form.get("id")
-        print(product_id)
-        product = product_list[product_id]
-        print(product)
-        amount = session['cart']
-        return render_template("product-index.html", products=product, amount=amount)
-    else:
-        db = retrieve_db('products', 'decks')
-        data = list(db.values())
-        products = []
-        for product in data:
-            if product['type'] == "Cardistry":
-                products.append(product)
-            else:
-                pass
-        amount = session['cart']
-        return render_template('retrievecardistryDecks.html', products=products, amount=amount)
+        return render_template('retrieveallDecks.html', products=products, amount=amount)
 # --Lewis--:Homepage end
 
 
@@ -324,12 +265,31 @@ def product_page():
         access_list = retrieve_db('products', 'accessories')
         if product_id in product_list:
             products = product_list[product_id]
+            relate = []
+            related = []
+            prod = product_list
+            for key in prod.keys():
+                relate.append(key)
+            relate.remove(product_id)
+            related_list = random.sample(relate, k=4)
+            for key in related_list:
+                related.append(prod[key])
+            print(related)
             amount = session['cart']
-            return render_template("product-index.html", products=products, amount=amount)
+            return render_template("product-index.html", products=products, amount=amount, related=related)
         elif product_id in access_list:
             products = access_list[product_id]
+            relate = []
+            related = []
+            access = access_list
+            for key in access.keys():
+                relate.append(key)
+            relate.pop(product_id)
+            related_list = random.sample(relate, k=4)
+            for key in related_list:
+                related.append(access[key])
             amount = session['cart']
-            return render_template("product-index.html", products=products, amount=amount)
+            return render_template("product-index.html", products=products, amount=amount, related=related)
     elif request.method == "POST":
         select_id = request.form.get('submit')
         quantity = request.form.get('quantity')
@@ -361,16 +321,9 @@ def product_page():
             }
             db[key]['cart'][select_id] = item
             commit_db('user', 'session', db)
-        product_list = retrieve_db('products', 'decks')
-        access_list = retrieve_db('products', 'accessories')
-        if select_id in product_list:
-            products = product_list[select_id]
-        elif select_id in access_list:
-            products = access_list[select_id]
         amount = len(cart.keys())
         session['cart'] = amount
-        amount = session['cart']
-        return render_template("product-index.html", products=products, amount=amount)
+        return redirect(url_for('product_page'))
 # --BP--:Product view end
 
 
@@ -385,7 +338,6 @@ def accessories_database():
         return render_template('accessories-database.html', form=form, product_list=product_list, product=product, amount=amount)
     elif request.method == 'POST':
         if request.form.get('submit') == 'create':
-            print('creating')
             file = form.file.data
             if form.file.data is not None:
                 filename = secure_filename(file.filename)
@@ -404,15 +356,12 @@ def accessories_database():
                 db = retrieve_db('products', 'accessories')
                 db[uid] = product
                 commit_db('products', 'accessories', db)
-                print('created')
                 return redirect(url_for('accessories_database'))
         elif request.form.get('function') == 'delete':
             delete_id = request.form.get('submit')
-            print(delete_id)
             db = retrieve_db('products', 'accessories')
             db.pop(delete_id)
             commit_db('products', 'accessories', db)
-            print("deleted")
             return redirect(url_for('accessories_database'))
         elif request.form.get('function') == 'update':
             db = retrieve_db('products', 'accessories')
@@ -424,7 +373,6 @@ def accessories_database():
         else:
             db = retrieve_db('products', 'accessories')
             uid = request.form.get('submit')
-            print(uid)
             product = db[uid]
             if form.file.data is not None:
                 file = form.file.data
@@ -433,7 +381,6 @@ def accessories_database():
                 product['image'] = filename
             if form.name.data != "":
                 product['name'] = form.name.data
-                print('name')
             if form.brand.data != "":
                 product['brand'] = form.brand.data
             if form.description.data != "":
@@ -441,13 +388,11 @@ def accessories_database():
             if form.price.data is not None:
                 product['price'] = f"{form.price.data:.2f}"
             if form.offer.data is not None:
-                print('offer change')
                 product['offer'] = form.offer.data
                 product['offered price'] = offered_price(product['price'], product['offer'])
             uid = str(uid)
             db[uid] = product
             commit_db('products', 'accessories', db)
-            print("updated")
             return redirect(url_for('accessories_database'))
 
 
@@ -457,7 +402,6 @@ def update_accessories_info():
     if request.method == "POST":
         db = retrieve_db('products', 'decks')
         uid = request.form.get('product_id')
-        print(uid)
         product = db[uid]
         if form.file.data is not None:
             file = form.file.data
@@ -466,7 +410,6 @@ def update_accessories_info():
             product['image'] = filename
         if form.name.data != "":
             product['name'] = form.name.data
-            print('name')
         if form.brand.data != "":
             product['brand'] = form.brand.data
         if form.description.data != "":
@@ -474,13 +417,11 @@ def update_accessories_info():
         if form.price.data is not None:
             product['price'] = f"{form.price.data:.2f}"
         if form.offer.data is not None:
-            print('offer change')
             product['offer'] = form.offer.data
             product['offered price'] = offered_price(product['price'], product['offer'])
         uid = str(uid)
         db[uid] = product
         commit_db('products', 'decks', db)
-        print("updated")
         return redirect(url_for('accessories_database'))
     else:
         amount = session['cart']
@@ -491,7 +432,6 @@ def update_accessories_info():
 def retrieve_accessories():
     if request.method == 'POST':
         product_id = request.form.get("id")
-        print(product_id)
         session['id'] = product_id
         return redirect(url_for('product_page'))
     else:
@@ -525,10 +465,8 @@ def create_tutorial():
                 db = retrieve_db('Tutorial', 'video')
                 db[uid] = video
                 commit_db('Tutorial', 'video', db)
-                print('created')
                 return redirect(url_for('create_tutorial'))
         elif request.form.get('function') == 'delete':
-            print(request.form.get('submit'))
             if request.form.get('function') == "delete":
                 delete_id = request.form.get('submit')
                 product = retrieve_db('Tutorial', 'video')
@@ -538,7 +476,6 @@ def create_tutorial():
                 return redirect(url_for('create_tutorial'))
         elif request.form.get('function') == 'update':
             db = retrieve_db('Tutorial', 'video')
-            print(db)
             pid = request.form.get('submit')
             item = db[pid]
             form = UpdateTutorial()
@@ -557,7 +494,6 @@ def update_tutorial_info():
     if request.method == "POST":
         db = retrieve_db('Tutorial', 'video')
         uid = request.form.get('product_id')
-        print(uid)
         product = db[uid]
         if form.file.data is not None:
             file = form.file.data
@@ -566,10 +502,8 @@ def update_tutorial_info():
             product['image'] = filename
         if form.name.data != "":
             product['name'] = form.name.data
-            print('name')
         elif form.difficulty.data is not None:
             product['difficulty'] = form.difficulty.data
-            print('difficulty')
         elif form.type.data is not None:
             product['type'] = form.type.data
         elif form.video.data is not None:
@@ -577,7 +511,6 @@ def update_tutorial_info():
         uid = str(uid)
         db[uid] = product
         commit_db('Tutorial', 'video', db)
-        print("updated")
         return redirect(url_for('create_tutorial'))
     else:
         return render_template('tutorial-update.html', form=form)
@@ -613,10 +546,8 @@ def retrieve_promotion():
             pass
     if request.method == 'POST':
         product_id = request.form.get("id")
-        print(product_id)
         session['id'] = product_id
         return redirect(url_for('product_page'))
-    print(promotion_list)
     return render_template('retrievePromotion.html', promotion_list=promotion_list)
 
 
@@ -628,8 +559,7 @@ def retrieve_cart():
         access = retrieve_db('products', 'accessories')
         x = db.keys()
         for i in x:
-            key = i
-        cart = db[key]['cart']
+            cart = db[i]['cart']
         keys = cart.keys()
         cart_list = []
         for key in keys:
@@ -659,8 +589,34 @@ def retrieve_cart():
         for i in cart_list:
             count += int(i['quantity'])
             price += float(i['total'])
+        price = f"{price:.2f}"
         amount = session['cart']
         return render_template('shopping-cart.html', cart_list=cart_list, amount=amount, count=count, total=price)
+
+
+@app.route('/deletecartitem/<id>', methods=['GET'])
+def deletecartitem(id):
+    db = retrieve_db('user', 'session')
+    x = db.keys()
+    for i in x:
+        cart = db[i]['cart']
+    shop = cart
+    keys = shop.keys()
+    for key in keys:
+        try:
+            cart.pop(id)
+            break
+        except:
+            pass
+    for i in x:
+        db[i]['cart'] = cart
+    commit_db('user', 'session', db)
+    count = 0
+    for i in cart:
+        count += 1
+    session['cart'] = count
+    return redirect(url_for('retrieve_cart'))
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -702,13 +658,11 @@ def login():
                         customers_dict[customer.get_customer_id()] = customer
                         db['Customers'] = customers_dict
                         session['login_success'] = customer.get_email()
-                        print("logged in")
                         db.close()
                         return redirect(url_for('profile'))
 
                 else:
                     session['wrong_password'] = "WRONG PASSWORD"
-                    print("wrong password")
             else:
                 print("email dont exist")
         session['email_dont_exist'] = "EMAIL DOES NOT EXIST"
@@ -736,7 +690,6 @@ def signup():
         temp_id = str(random.randint(100, 999))
 
 
-        print(signup_form.email.data, emails)
         if signup_form.email.data.split('@')[1] == "cardhouse.com":
             session['banned_email'] = "Emails cannot end with '@cardhouse.com'"
             return redirect(url_for('signup'))

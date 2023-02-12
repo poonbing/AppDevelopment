@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+
+
+
         <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
           <div class="carousel-inner">
             <div class="carousel-item active">
@@ -168,6 +172,7 @@
             <div class="container px-4 px-lg-5 mt-5">
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                     {% for item in products %}
+                    <div class="{{ item['type'] }}">
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Sale badge-->
@@ -209,75 +214,58 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                     {% endfor %}
+                    <button type="button" onclick="FilterClassic(this)" value="classic">
+                    <button type="button" onclick="FilterLuxury(this)" value="luxury">
+                    <button type="button" onclick="FilterCardistry(this)" value="cardistry">
+                    </div>
                 </div>
             </div>
         </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<script>
+var classic = document.querySelectorAll(".Classic");
+var luxury = document.querySelectorAll(".Luxury");
+var cardistry = document.querySelectorAll(".Cardistry");
+var all = document.querySelectorAll(".Classic,.Luxury,.Cardistry");
+
+function FilterClassic(type) {
+    var i = 0;
+    var k = 0;
+    var dl = classic.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+    for (k; k < dl; k++) {
+        classic[k].style.display = 'block';
+    };
+}
+function FilterLuxury(type) {
+    var i = 0;
+    var k = 0;
+    var dl = luxury.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        luxury[k].style.display = 'block';
+    };
+}
+function FilterCardistry(type) {
+    var i = 0;
+    var k = 0;
+    var dl = cardistry.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        cardistry[k].style.display = 'block';
+    };
+};
+
+</script>
 
 {% endblock content %}

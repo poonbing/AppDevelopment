@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
-</head>
-<body>
+
 
 {% block navbar %}
     {% include 'includes/_navbar(2).html' %}
 {% endblock %}
 
-<section class="h-100 h-custom" style="background-color: #d2c9ff;">
+<section class="h-100 h-custom" style="background-color: #454545  ;">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12">
@@ -54,7 +45,7 @@
                           <h6 class="mb-0">SGD {{ item['total'] }}</h6>
                         </div>
                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                          <a href="#!" class="text-muted"><i class="fas fa-times"></i></a>
+                          <a href="/deletecartitem/{{ item['id'] }}" class="text-muted"><i class="fas fa-times"></i></a>
                         </div>
                       </div>
                     <hr class="my-4">
@@ -103,7 +94,7 @@
                   </div>
                   <form action="/" method="POST">
                     <button type="button" class="btn btn-dark btn-block btn-lg"
-                    data-mdb-ripple-color="dark">Register</button>
+                    data-mdb-ripple-color="dark">Check Out</button>
                   </form>
                 </div>
               </div>
