@@ -216,56 +216,9 @@
                     </div>
                     </div>
                     {% endfor %}
-                    <button type="button" onclick="FilterClassic(this)" value="classic">
-                    <button type="button" onclick="FilterLuxury(this)" value="luxury">
-                    <button type="button" onclick="FilterCardistry(this)" value="cardistry">
                     </div>
                 </div>
             </div>
         </section>
-
-<script>
-var classic = document.querySelectorAll(".Classic");
-var luxury = document.querySelectorAll(".Luxury");
-var cardistry = document.querySelectorAll(".Cardistry");
-var all = document.querySelectorAll(".Classic,.Luxury,.Cardistry");
-
-function FilterClassic(type) {
-    var i = 0;
-    var k = 0;
-    var dl = classic.length;
-    for (i; i < all.length; i++) {
-        all[i].style.display = 'none';
-    };
-    for (k; k < dl; k++) {
-        classic[k].style.display = 'block';
-    };
-}
-function FilterLuxury(type) {
-    var i = 0;
-    var k = 0;
-    var dl = luxury.length;
-    for (i; i < all.length; i++) {
-        all[i].style.display = 'none';
-    };
-
-    for (k; k < dl; k++) {
-        luxury[k].style.display = 'block';
-    };
-}
-function FilterCardistry(type) {
-    var i = 0;
-    var k = 0;
-    var dl = cardistry.length;
-    for (i; i < all.length; i++) {
-        all[i].style.display = 'none';
-    };
-
-    for (k; k < dl; k++) {
-        cardistry[k].style.display = 'block';
-    };
-};
-
-</script>
 
 {% endblock content %}

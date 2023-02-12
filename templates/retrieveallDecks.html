@@ -10,12 +10,25 @@
                     <p class="lead fw-normal text-white-50 mb-0">Add them to your collection!</p>
                 </div>
             </div>
+
         </header>
+
+
+        <div class="sidebar">
+            <header>Filter By</header>
+            <ul>
+                <li>Luxury <input type="radio" name="radio" value="luxury" onchange="FilterLuxury(this)"></li>
+                <li>Classic <input type="radio" name="radio" value="classic" onchange="FilterClassic(this)"></li>
+                <li>Cardistry <input type="radio" name="radio" value="cardistry" onchange="FilterCardistry(this)"></li>
+                <li><button class="sidebar-clear" onclick="ClearFilter(this)">Clear Filter</button></li>
+            </ul>
+        </div>
         <!-- Section-->
         <section class="py-5">
             <div class="container px-4 px-lg-5 mt-5">
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                     {% for item in products %}
+                    <div class="{{ item['type'] }}">
                         <div class="col mb-5">
                             <div class="card h-100">
                                 <!-- Sale badge-->
@@ -50,15 +63,74 @@
                                 <!-- Product actions-->
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                     <div class="text-center">
-                                        <form action="/" method="POST">
+                                        <form method="POST">
                                             <button class="btn btn-outline-dark flex-shrink-0" type="submit" value="{{ item['id'] }}" name="id">View Option</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
         </section>
+<script>
+var classic = document.querySelectorAll(".Classic");
+var luxury = document.querySelectorAll(".Luxury");
+var cardistry = document.querySelectorAll(".Cardistry");
+var all = document.querySelectorAll(".Classic,.Luxury,.Cardistry");
+var radio = document.querySelectorAll("input[name='radio']");
+
+
+function FilterClassic(type) {
+    var i = 0;
+    var k = 0;
+    var dl = classic.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+    for (k; k < dl; k++) {
+        classic[k].style.display = 'block';
+    };
+}
+function FilterLuxury(type) {
+    var i = 0;
+    var k = 0;
+    var dl = luxury.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        luxury[k].style.display = 'block';
+    };
+}
+function FilterCardistry(type) {
+    var i = 0;
+    var k = 0;
+    var dl = cardistry.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        cardistry[k].style.display = 'block';
+    };
+};
+
+function ClearFilter(type) {
+    var i = 0;
+    var k = 0;
+    var dl = cardistry.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'block';
+    };
+
+    for (k; k < 4; k++) {
+        radio[k].checked = false;
+    };
+};
+
+</script>
 {% endblock %}

@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block title %}Library Loan System - Retrieve Payment{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+      <!-- Start of Left Side of Page -->
+
+        <div class="col">
+        <p class="fs-3 text-start" style="padding-top:20px;padding-bottom:20px;">
+            Personal Information
+        </p>
+    <!-- Start of Submitted Information -->
+    <table class="table table-bordered table-striped">
+    {% for payment in payment_list %}
+        <tr >
+            <th style="width:30%;">User ID</th>
+            <td class="text-center">{{ payment.get_user_id() }}</td>
+        </tr>
+        <tr>
+            <th>Card Name</th>
+            <td class="text-center">{{ payment.get_card_name() }}</td>
+        </tr>
+        <tr>
+            <th>Card Number</th>
+            <td class="text-center">{{ payment.get_card_number() }}</td>
+        </tr>
+        <tr>
+            <th>CCV Code</th>
+            <td class="text-center">{{ payment.get_security_code() }}</td>
+        </tr>
+        <tr>
+            <th>Expiry Date (Month)</th>
+            <td class="text-center">{{ payment.get_expiry_month() }}</td>
+        </tr>
+        <tr>
+            <th>Expiry Date (Year)</th>
+            <td class="text-center">{{ payment.get_expiry_year() }}</td>
+        </tr>
+        <tr>
+            <th>Payment Type</th>
+            <td class="text-center">{{ payment.get_payment_type() }}</td>
+        </tr>
+        <tr>
+            <th>Delivery Type</th>
+            <td class="text-center">{{ payment.get_delivery_type() }}</td>
+        </tr>
+        <tr>
+            <th>Promo code</th>
+            <td class="text-center">{{ payment.get_promo_code() }}</td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="/updatePayment/{{payment.get_user_id()}}" class="btn btn-warning">
+                    Update
+                </a>
+            </td>
+            <td>
+                <form action="{{url_for('delete_Payment', id=payment.get_user_id())}}" method="POST">
+                <!-- Button to Open the Modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{payment.get_user_id()}}">
+                        Delete
+                    </button>
+                <!-- The Modal -->
+                    <div class="modal" id="myModal_{{payment.get_user_id()}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">
+                                Delete Confirmation
+                            </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                <!-- Modal body -->
+                        <div class="modal-body">
+                            Are you sure you want to delete {{payment.get_card_name()}} ?
+                        </div>
+                <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <input type="submit" value="Delete" class="btn btn-danger">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+
+    </table>
+    <!-- End of Submitted Information -->
+    </div>
+      <!-- End of Left Side of Page -->
+      <!-- Start of Right Side of Page -->
+        <div class="col">
+        <p class="fs-3 text-start" style="padding-top:20px;padding-bottom:20px;">
+            Your Order
+        </p>
+       <!-- Right Side of Page -->
+    <!-- Start of Cart -->
+        <div>
+        <table class="table border table-responsive">
+            <thead>
+                <tr>
+                    <td>Product ID</td>
+                    <td>Product Image</td>
+                    <td>Product Name</td>
+                    <td>Product Brand</td>
+                    <td>Product Value</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in products %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>{{ item['image'] }}</td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['brand'] }}</td>
+                    <td>{{ item['price'] }}</td>
+                </tr>
+            {% endfor %}
+                <tr style="background-color: #f2f2f2">
+            {% set total = 0 %}
+                    <td colspan="4" style="text-align:center;font-size: 20px;"><b>Subtotal</b></td>
+                    <td style="font-size: 20px;"><b>$150.00</b></td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- End of Cart -->
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

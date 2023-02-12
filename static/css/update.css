@@ -1,0 +1,27 @@
+
+
+
+
+
+.update-form{
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background: linen;
+    font-size: 18px;
+}
+
+.update-form-group{
+    padding: 12px;
+
+}
+
+.update-header{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.update-form-label{
+    font-weight: bold;
+}

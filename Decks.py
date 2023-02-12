@@ -1,7 +1,7 @@
 class Deck:
-    def __init__(self, id, name, brand, deck_type, description, price, image, offer):
+    def __init__(self, id_count, name, brand, deck_type, description, price, image, offer):
         self.offered_price = None
-        self.product_id = id
+        self.product_id = id_count + 1
         self.name = name
         self.brand = brand
         self.type = deck_type

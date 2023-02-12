@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tutorial.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
@@ -17,28 +18,7 @@
 
 
     <!----- side navbar ------>
-    <div class="menu-btn">
-        <i class="fa fa-bars"></i>
-    </div>
-    <div class="side-bar">
-        <div class="close-btn">
-            <i class="fa-solid fa-arrow-left"></i>
-        </div>
-        <div class="menu" id="menu">
-            <div class="item">
-                <a href="/retrieveTrick" class="sub-btn">Tricks</a>
-            </div>
-            <div class="item">
-                <a href="/retrieveSLH" class="sub-btn">Sleight of Hand</a>
-            </div>
-            <div class="item">
-                <a href="/retrieveFlourishes" class="sub-btn">Flourishes</a>
-            </div>
-            <div class="item">
-                <a href="/retrieveNoncard" class="sub-btn">Non-Cards</a>
-            </div>
-        </div>
-    </div>
+
 
 
 
@@ -53,11 +33,23 @@
             </div>
         </header>
 
+        <div class="sidebar">
+            <header>Filter By</header>
+            <ul>
+                <li>Trick <input type="radio" name="radio" onclick="FilterTrick(type)"></li>
+                <li>Sleight of Hand <input type="radio" name="radio" onclick="FilterSOH(type)"></li>
+                <li>Flourishes <input type="radio" name="radio" onclick="FilterFlourish(type)"></li>
+                <li>Non-Cards <input type="radio" name="radio" onclick="FilterNC(type)"></li>
+                <li><button class="sidebar-clear" onclick="ClearFilter(type)">Clear Filter</button></li>
+            </ul>
+        </div>
+
 
         <section class="py-5">
             <div class="container px-4 px-lg-5 mt-5">
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                     {% for video in tutorial_list %}
+                    <div class="{{ video['type'] }}">
                         <div class="col mb-5 {{ video['type'] }}" >
                             <div class="card h-100">
                                 <!-- Sale badge-->
@@ -95,10 +87,79 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
             {% endfor %}
         </div>
 
+<script>
+var flourish = document.querySelectorAll(".Flourishes");
+var trick = document.querySelectorAll(".Trick");
+var soh = document.querySelectorAll(".Sleight.of.Hand");
+var cards = document.querySelectorAll(".Non-Cards");
+var all = document.querySelectorAll(".Flourishes,.Trick,.Sleight.of.Hand,.Non-Cards");
+var radio = document.querySelectorAll("input[name='radio']");
 
+
+function FilterFlourish(type) {
+    var i = 0;
+    var k = 0;
+    var dl = flourish.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+    for (k; k < dl; k++) {
+        flourish[k].style.display = 'block';
+    };
+}
+function FilterTrick(type) {
+    var i = 0;
+    var k = 0;
+    var dl = trick.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        trick[k].style.display = 'block';
+    };
+}
+function FilterSOH(type) {
+    var i = 0;
+    var k = 0;
+    var dl = soh.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        soh[k].style.display = 'block';
+    };
+}
+function FilterNC(type) {
+    var i = 0;
+    var k = 0;
+    var dl = cards.length;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'none';
+    };
+
+    for (k; k < dl; k++) {
+        cards[k].style.display = 'block';
+    };
+};
+function ClearFilter(type) {
+    var i = 0;
+    var k = 0;
+    for (i; i < all.length; i++) {
+        all[i].style.display = 'block';
+    };
+
+    for (k; k < 5; k++) {
+        radio[k].checked = false;
+    };
+};
+
+</script>
 
 
 

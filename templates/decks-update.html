@@ -1,41 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head></head>
-    <body>
+{% extends 'layout.html' %}
+{% block title %} Retrieve Tutorial {% endblock %}
+{% block content %}
+{% from "formHelper.html" import render_field %}
+
+
+
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h2 class="display-4 fw-bolder">Update Deck</h2>
+                </div>
+            </div>
+        </header>
         <div class="update-form">
             <form method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    {{ form.name.label }} ({{ item['name'] }})
-                    <br>
+                <div class="update-form-group">
+                    <div class="update-form-label">
+
+                        {{ form.name.label }} ({{ item['name'] }})
+                    </div>
+                        <br>
                     {{ form.name }}
                 </div>
-                <div class="form-group">
-                    {{ form.brand.label }} ({{ item['brand'] }})
-                    <br>
+                <div class="update-form-group">
+                    <div class="update-form-label">
+
+                        {{ form.brand.label }} ({{ item['brand'] }})
+                    </div>
+                        <br>
                     {{ form.brand }}
                 </div>
-                <div class="form-group">
-                    {{ form.type.label }} ({{ item['type'] }})
-                    <br>
+                <div class="update-form-group">
+                    <div class="update-form-label">
+
+                        {{ form.type.label }} ({{ item['type'] }})
+                    </div>
+                        <br>
                     {{ form.type }}
                 </div>
-                <div class="form-group">
-                    {{ form.description.label }} ({{ item['description'] }})
-                    <br>
+                <div class="update-form-group">
+                    <div class="update-form-label">
+
+                        {{ form.description.label }} ({{ item['description'] }})
+                    </div>
+                        <br>
                     {{ form.description }}
                 </div>
-                <div class="form-group">
-                    {{ form.price.label }} ({{ item['price'] }})
-                    <br>
+                <div class="update-form-group">
+                    <div class="update-form-label">
+
+                        {{ form.price.label }} ({{ item['price'] }})
+                    </div>
+                        <br>
                     {{ form.price }}
                 </div>
-                <div class="form-group">
-                    {{ form.file.label }} ({{ item['image'] }})
-                    <br>
+                <div class="update-form-group">
+                    <div class="update-form-label">
+
+                        {{ form.file.label }} ({{ item['image'] }})
+                    </div>
+                        <br>
                     {{ form.file }}
                 </div>
-                <div class="form-group">
-                    {{ form.offer.label }} ({{ item['offer'] }})
+                <div class="update-form-group">
+                    <div class="update-form-label">
+                        {{ form.offer.label }} ({{ item['offer'] }})
+                    </div>
                     <br>
                     {{ form.offer }}
                 </div>
@@ -44,5 +74,5 @@
                 </div>
             </form>
         </div>
-    </body>
-</html>
+
+{% endblock %}

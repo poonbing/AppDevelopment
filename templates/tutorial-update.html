@@ -1,32 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head></head>
-    <body>
+{% extends 'layout.html' %}
+{% block title %} Retrieve Tutorial {% endblock %}
+{% block content %}
+{% from "formHelper.html" import render_field %}
+
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h2 class="display-4 fw-bolder">Update Tutorial video</h2>
+                </div>
+            </div>
+        </header>
         <div class="update-form">
             <form method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    {{ form.name.label }} ({{ video['name'] }})
+                <div class="update-form-group">
+                    <div class="update-form-label">
+                        {{ form.name.label }} ({{ video['name'] }})
+                    </div>
                     <br>
                     {{ form.name }}
                 </div>
-                <div class="form-group">
-                    {{ form.difficulty.label }} ({{ video['difficulty'] }})
+                <div class="update-form-group">
+                    <div class="update-form-label">
+                        {{ form.difficulty.label }} ({{ video['difficulty'] }})
+                    </div>
                     <br>
-                    {{ form.name }}
+                    {{ form.difficulty }}
                 </div>
-                <div class="form-group">
-                    {{ form.type.label }} ({{ video['type'] }})
+                <div class="update-form-group">
+                    <div class="update-form-label">
+                        {{ form.type.label }} ({{ video['type'] }})
+                    </div>
                     <br>
                     {{ form.type }}
                 </div>
-                <div class="form-group">
-                    {{ form.video.label }} ({{ video['video'] }})
+                <div class="update-form-group">
+                    <div class="update-form-label">
+                        {{ form.video.label }} ({{ video['video'] }})
+                    </div>
                     <br>
                     {{ form.video }}
                 </div>
 
-                <div class="form-group">
-                    {{ form.file.label }} ({{ video['thumbnail'] }})
+                <div class="update-form-group">
+                    <div class="update-form-label">
+                        {{ form.file.label }} ({{ video['thumbnail'] }})
+                    </div>
                     <br>
                     {{ form.file }}
                 </div>
@@ -35,5 +53,6 @@
                 </div>
             </form>
         </div>
-    </body>
-</html>
+
+
+{% endblock %}

@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, url_for, redirect, session, g
 import shelve
 from Forms import signUp, Login, update, ForgetPassword
 from Form1 import CreateDeckForm, UpdateDeckForm, CreateTutorial, CreateAccessories, UpdateTutorial, UpdateAccessories
+from Form import CreatePaymentForm
+from Form3 import CreateAddressForm
+from Decks import Deck
 from uuid import uuid4
 import random
 from werkzeug.utils import secure_filename
@@ -9,6 +12,8 @@ import os
 import os.path
 from flask_mail import Mail,Message
 import Customers
+import Payment
+import Address
 
 app = Flask('__name__', template_folder='./templates/')
 app.config['SECRET_KEY'] = 'SecretKey'
@@ -592,6 +597,9 @@ def retrieve_cart():
         price = f"{price:.2f}"
         amount = session['cart']
         return render_template('shopping-cart.html', cart_list=cart_list, amount=amount, count=count, total=price)
+    if request.method == 'POST':
+        print("salim gay")
+        return redirect(url_for('create_payment'))
 
 
 @app.route('/deletecartitem/<id>', methods=['GET'])
@@ -890,9 +898,355 @@ def Forgotpassword():
 
     return render_template('/UserInt_forgot.html', form=forget_password_form)
 
+
 # @app.route('/AdminDashTable', methods=['GET', 'POST'])
 # def AdminDashboardTable():
 #     return render_template('/Dashboard/UserInt_customers.html')
+
+
+@app.route('/createpayment', methods=['GET', 'POST'])
+def create_payment():
+    create_Payment_form = CreatePaymentForm(request.form)
+
+    if request.method == 'POST':
+
+        payment_dict = {}
+        db = shelve.open('payment.db', 'c')
+
+        try:
+            payment_dict = db['Payment']
+        except:
+            print("Error in retrieving Payment from payment.db.")
+
+        payment = Payment.Payment(create_Payment_form.card_name.data,
+                                  create_Payment_form.card_number.data,
+                                  create_Payment_form.security_code.data,
+                                  create_Payment_form.expiry_month.data,
+                                  create_Payment_form.expiry_year.data,
+                                  create_Payment_form.payment_type.data,
+                                  create_Payment_form.delivery_type.data,
+                                  create_Payment_form.promo_code.data)
+        payment_dict[payment.get_user_id()] = payment
+        db['Payment'] = payment_dict
+
+        # Test codes
+        payment_dict = db['Payment']
+        payment = payment_dict[payment.get_user_id()]
+        print(payment.get_card_name(), "was stored in payment.db successfully with user_id ==",
+              payment.get_user_id())
+
+        db.close()
+        if create_Payment_form.card_number.data.isalpha() or create_Payment_form.security_code.data.isalpha():
+            return redirect(url_for('payment_fail'))
+        else:
+            return redirect(url_for('payment_confirm'))
+    elif request.method == 'GET':
+        db = retrieve_db('user', 'session')
+        decks = retrieve_db('products', 'decks')
+        access = retrieve_db('products', 'accessories')
+        x = db.keys()
+        for i in x:
+            cart = db[i]['cart']
+        keys = cart.keys()
+        cart_list = []
+        for key in keys:
+            item = {}
+            if key[0] == 'D':
+                deck = decks[key]
+                item['id'] = key
+                item['name'] = deck['name']
+                item['type'] = 'Decks'
+                item['quantity'] = cart[key]['quantity']
+                item['price'] = deck['offered price']
+                item['total'] = f"{float(deck['offered price'])*float(cart[key]['quantity']):.2f}"
+                item['image'] = deck['image']
+                item['brand'] = deck['brand']
+                cart_list.append(item)
+            elif key[0] == 'A':
+                acc = access[key]
+                item['id'] = key
+                item['name'] = acc['name']
+                item['type'] = 'Accessories'
+                item['quantity'] = cart[key]['quantity']
+                item['price'] = acc['offered price']
+                item['total'] = f"{float(acc['offered price'])*float(cart[key]['quantity']):.2f}"
+                item['image'] = acc['image']
+                item['brand'] = acc['brand']
+                cart_list.append(item)
+        count = 0
+        price = 0
+        for i in cart_list:
+            count += int(i['quantity'])
+            price += float(i['total'])
+        price = f"{price:.2f}"
+        amount = session['cart']
+        return render_template('createPayment.html', form=create_Payment_form, data=cart_list, amount=amount, count=count, total=price)
+
+# View Submitted Payment Details
+
+@app.route('/retrievePayment')
+def retrieve_Payment():
+    payment_dict = {}
+    db = shelve.open('payment.db', 'r')
+    payment_dict = db['Payment']
+    db.close()
+
+    payment_list = []
+    for key in payment_dict:
+        payment = payment_dict.get(key)
+        payment_list.append(payment)
+
+    data = {}
+    db = retrieve_db('products', 'decks')
+    data = list(db.values())
+    products = []
+    for key in data:
+        products.append(key)
+    return render_template('retrievePayment.html', count=len(payment_list), payment_list=payment_list, products=products)
+
+# Update Submitted Payment Details
+@app.route('/updatePayment/<int:id>/', methods=['GET', 'POST'])
+def update_Payment(id):
+    update_Payment_form = CreatePaymentForm(request.form)
+
+    if request.method == 'POST' and update_Payment_form.validate():
+        payment_dict = {}
+        db = shelve.open('payment.db', 'w')
+        payment_dict = db['Payment']
+        payment = payment_dict.get(id)
+        payment.set_card_name(update_Payment_form.card_name.data)
+        payment.set_card_number(update_Payment_form.card_number.data)
+        payment.set_security_code(update_Payment_form.security_code.data)
+        payment.set_expiry_month(update_Payment_form.expiry_month.data)
+        payment.set_expiry_year(update_Payment_form.expiry_year.data)
+        payment.set_payment_type(update_Payment_form.payment_type.data)
+        payment.set_delivery_type(update_Payment_form.delivery_type.data)
+        payment.set_promo_code(update_Payment_form.promo_code.data)
+
+        db['Payment'] = payment_dict
+        db.close()
+
+        return redirect(url_for('get_receipt'))
+    else:
+        payment_dict = {}
+        db = shelve.open('payment.db', 'r')
+        payment_dict = db['Payment']
+        db.close()
+
+        payment = payment_dict.get(id)
+        update_Payment_form.card_name.data = payment.get_card_name()
+        update_Payment_form.card_number.data = payment.get_card_number()
+        update_Payment_form.security_code.data = payment.get_security_code()
+        update_Payment_form.expiry_month.data = payment.get_expiry_month()
+        update_Payment_form.expiry_year.data = payment.get_expiry_year()
+        update_Payment_form.payment_type.data = payment.get_payment_type()
+        update_Payment_form.delivery_type.data = payment.get_delivery_type()
+        update_Payment_form.promo_code.data = payment.get_promo_code()
+
+        data = {}
+        db = retrieve_db('products', 'decks')
+        data = list(db.values())
+        products = []
+        for key in data:
+            products.append(key)
+        return render_template('updatePayment.html', form=update_Payment_form, products=products)
+
+# Delete Submitted Payment Details
+@app.route('/deletePayment/<int:id>', methods=['POST'])
+def delete_Payment(id):
+    payment_dict = {}
+    db = shelve.open('payment.db', 'w')
+    payment_dict = db['Payment']
+    payment_dict.pop(id)
+    db['Payment'] = payment_dict
+    db.close()
+    print("NO PAYMENT")
+    return redirect(url_for('retrieve_Payment')) # Should be redirected back to Make Order Page
+
+# Payment - Payment Submission Success
+@app.route("/payment_end")
+def payment_end():
+    return render_template("payment_end.html")
+
+@app.route("/Unsuccessful_Payment")
+def payment_fail():
+    return render_template("Unsuccessful_Payment.html")
+
+
+# Payment - Payment Confirmation
+@app.route("/confirmpayment")
+def payment_confirm():
+    print("PAYMENT SUCCESSFUL")
+    db = retrieve_db('user', 'session')
+    x = db.keys()
+    for i in x:
+        db[i]['cart'] = []
+        commit_db('user', 'session', db)
+    session['cart'] = 0
+    return redirect(url_for('get_receipt'))
+
+#Salim's Address form begins here
+@app.route("/createAddress", methods=['GET', 'POST'])
+def create_Address():
+    create_Address_form = CreateAddressForm(request.form)
+    if request.method == 'POST' and create_Address_form.validate():
+        address_dict = {}
+        db = shelve.open('address.db', 'c')
+
+        try:
+            address_dict = db['Address']
+        except:
+            print("Error in retrieving Payment from Address.db.")
+
+        address = Address.Address(create_Address_form.first_name.data,
+                                  create_Address_form.last_name.data,
+                                  create_Address_form.town.data,
+                                  create_Address_form.zipcode.data,
+                                  create_Address_form.address.data,
+                                  create_Address_form.phone_number.data,
+                                  create_Address_form.office_number.data,
+                                  create_Address_form.email_address.data,
+                                  create_Address_form.remarks.data,)
+        address_dict[address.get_user_id()] = address
+        db['Address'] = address_dict
+
+        # Test codes
+        address_dict = db['Address']
+        address = address_dict[address.get_user_id()]
+        print(address.get_first_name(), address.get_last_name(), "was stored in payment.db successfully with user_id ==",
+              address.get_user_id())
+
+        db.close()
+
+
+        return redirect(url_for('create_Payment'))
+    return render_template('createAddress.html', form=create_Address_form)
+
+# View Submitted Payment Details
+
+@app.route('/retrieveAddress')
+
+# Update Submitted Payment Details
+@app.route('/updateAddress/<int:id>/', methods=['GET', 'POST'])
+def update_Address(id):
+    update_Address_form = CreateAddressForm(request.form)
+
+    if request.method == 'POST' and update_Address_form.validate():
+        address_dict = {}
+        db = shelve.open('address.db', 'w')
+        address_dict = db['Address']
+        address = address_dict.get(id)
+        address.set_first_name(update_Address_form.first_name.data)
+        address.set_last_name(update_Address_form.last_name.data)
+        address.set_town(update_Address_form.town.data)
+        address.set_zipcode(update_Address_form.zipcode.data)
+        address.set_address(update_Address_form.address.data)
+        address.set_phone_number(update_Address_form.phone_number.data)
+        address.set_office_number(update_Address_form.office_number.data)
+        address.set_email_address(update_Address_form.email_address.data)
+        address.set_remarks(update_Address_form.remarks.data)
+
+        db['Address'] = address_dict
+        db.close()
+
+        return redirect(url_for('retrieve_Payment'))
+    else:
+        address_dict = {}
+        db = shelve.open('address.db', 'r')
+        address_dict = db['Address']
+        db.close()
+
+        payment = address_dict.get(id)
+        update_Address_form.first_name.data = payment.get_first_name()
+        update_Address_form.last_name.data = payment.get_last_name()
+        update_Address_form.town.data = payment.get_town()
+        update_Address_form.zipcode.data = payment.get_zipcode()
+        update_Address_form.address.data = payment.get_address()
+        update_Address_form.phone_number.data = payment.get_phone_number()
+        update_Address_form.office_number.data = payment.get_office_number()
+        update_Address_form.email_address.data = payment.get_email_address()
+        update_Address_form.remarks.data = payment.get_remarks()
+
+        return render_template('updateAddress.html', form=update_Address_form)
+
+# Delete Submitted Payment Details
+@app.route('/deleteAddress/<int:id>', methods=['POST'])
+def delete_Address(id):
+    address_dict = {}
+    db = shelve.open('address.db', 'w')
+    address_dict = db['Address']
+    address_dict.pop(id)
+    db['Address'] = address_dict
+    db.close()
+    print("NO PAYMENT")
+    return redirect(url_for('retrieve_Address')) # Should be redirected back to Make Order Page
+
+@app.route('/Receipt', methods=['GET', 'POST'])
+def get_receipt():
+    if request.method == 'GET':
+        payment_dict = {}
+        db = shelve.open('address.db', 'r')
+        address_dict = db['Address']
+        db.close()
+
+        address_list = []
+        for key in address_dict:
+            address = address_dict.get(key)
+            address_list.append(address)
+
+        payment_dict = {}
+        db = shelve.open('payment.db', 'r')
+        payment_dict = db['Payment']
+        db.close()
+
+        payment_list = []
+        for key in payment_dict:
+            payment = payment_dict.get(key)
+            payment_list.append(payment)
+
+        data = {}
+        db = retrieve_db('products', 'decks')
+        data = list(db.values())
+        products = []
+        for key in data:
+            products.append(key)
+
+        return render_template('Receipt.html', count=len(payment_list), address_list=address_list, payment_list=payment_list, products=products)
+    else:
+        return render_template('Unsuccessful_Payment.html')
+
+
+@app.route("/Order_History", methods=['GET', 'POST'])
+def get_order_history():
+    if request.method == 'GET':
+        Order_Address = shelve.open('address.db','c')
+        Order_Payment = shelve.open('payment.db','c')
+        order_list = retrieve_db('products', 'decks')
+        everything_list = Order_Address['Address']
+        transaction_list = Order_Payment['Payment']
+        order_id = request.form['id']
+        order = order_list[order_id]
+        orders = [Deck((int(order['id'])-1), order['name'], order['brand'], order['type'], order['description'], order['price'], order['image'], order['offer'])]
+        return render_template("Order_History.html", orders=orders)
+
+    if request.method == "POST":
+        select_id = request.form.get('select id')
+        quantity = request.form.get('quantity')
+        db = retrieve_db('user', 'cart')
+        if select_id in db:
+            existing = db[select_id]
+            quantity = int(existing)+int(quantity)
+            db[select_id] = int(quantity)
+            print(db)
+            commit_db('user', 'cart', db)
+        elif select_id not in db:
+            db[select_id] = int(quantity)
+            print(db)
+            commit_db('user', 'cart', db)
+        product_list = retrieve_db('products', 'decks')
+        products = [product_list[select_id]]
+        db.close()
+        return render_template("Order_History.html", products=products)
 
 
 if __name__ == '__main__':

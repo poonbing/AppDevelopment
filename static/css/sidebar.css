@@ -1,0 +1,52 @@
+
+
+.sidebar header{
+    font-size: 30px;
+    text-align: center;
+    line-height: 70px;
+    border-top: solid 1px;
+    border-bottom: solid 1px ;
+    color: black;
+}
+
+.sidebar{
+    position: absolute;
+    left: 0;
+    width: 150px;
+    color: black;
+    font-size: 14px;
+    margin-right: 100px;
+    z-index: 1;
+}
+
+.sidebar ul li{
+    display: block;
+    height: 100%;
+    width: 100%;
+    line-height: 65px;
+    box-sizing: border-box;
+}
+
+.sidebar-clear{
+    background: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: ease-in-out 0.3s;
+    margin-top: 10px;
+}
+
+.sidebar-clear:hover{
+    background: #252525;
+    color: white;
+}
+
+input[type="radio"]{
+    accent-color: black;
+    background-color: #fff;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 50%;
+}

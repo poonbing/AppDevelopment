@@ -4,7 +4,7 @@
     {% include 'includes/_navbar(2).html' %}
 {% endblock %}
 
-<section class="h-100 h-custom" style="background-color: #454545  ;">
+<section class="h-100 h-custom" style="background-image: url(/static/images/cart_background.jpeg);">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12">
@@ -92,8 +92,8 @@
                     <h5 class="text-uppercase">Total price</h5>
                     <h5>SGD {{ total }}</h5>
                   </div>
-                  <form action="/" method="POST">
-                    <button type="button" class="btn btn-dark btn-block btn-lg"
+                  <form method="POST">
+                    <button formaction="/cart" type="submit" class="btn btn-dark btn-block btn-lg"
                     data-mdb-ripple-color="dark">Check Out</button>
                   </form>
                 </div>

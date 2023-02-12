@@ -1,0 +1,55 @@
+
+
+.body-ctn{
+    background: black;
+    padding: 40px;
+}
+
+.contact-header{
+    text-align: center;
+    color: white;
+}
+
+.question-ctn{
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    text-align: center;
+    color: white;
+    border: solid;
+    border-radius: 3px;
+    width: 60%;
+}
+
+.question-header{
+    border: solid 1px;
+    cursor: pointer;
+    padding: 10px;
+    text-align: left;
+
+}
+
+.mail-ctn{
+    color: white;
+    text-align: center;
+    background: #454545;
+    padding: 10px;
+}
+
+
+#question-dropdown1{
+    display: none;
+}
+
+#question-dropdown2{
+    display: none;
+}
+#question-dropdown3{
+    display: none;
+}
+#question-dropdown4{
+    display: none;
+}
+#question-dropdown5{
+    display: none;
+}

@@ -1,0 +1,76 @@
+<h1 class="display-4" style="text-align:center;margin:5px;">Past Deliveries</h1>
+<div>
+{% if count == 0 %}
+<p>There are no users.</p>
+{% elif count == 1 %}
+<p>There is 1 user.</p>
+{% else %}
+<p>There are {{ count }} users.</p>
+{% endif %}
+</div>
+<div>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>User ID</th>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Card Number</th>
+<th>Delivery type</th>
+<th>Delivery Address</th>
+<th></th>
+<th>Delivery Date</th>
+<th>Remarks</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+{% for payment in payment_list %}
+{% for address in address_list %}
+    <tr>
+    <td>{{ address.get_user_id() }}</td>
+    <td>{{ address.get_first_name() }}</td>
+    <td>{{ address.get_item_name() }}</td>
+    <td>{{address.get_address()}}</td>
+    <td>{{ address.get_remarks() }}</td>
+
+    <form action="{{url_for('delete_user', id=user.get_user_id())}}" method="POST">
+    <!-- Button to Open the Modal -->
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{address.get_user_id()}}">
+      Delete
+    </button>
+
+<!-- The Modal -->
+<div class="modal"  id="myModal_{{address.get_user_id()}}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Confirmation</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        Are you sure you want to delete {{address.get_first_name()}} from Order History?
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <input type="submit" value="Delete" class="btn btn-danger">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+    </form>
+    </td>
+    </tr>
+    {% endfor %}
+{% endfor %}
+</tbody>
+</table>
+</div>

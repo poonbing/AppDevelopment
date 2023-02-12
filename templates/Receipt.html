@@ -1,0 +1,198 @@
+{% extends "layout.html" %}
+{% block title %}Library Loan System - Retrieve Payment{% endblock %}
+
+{% block content %}
+<head>
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+</head>
+<body>
+<style>
+    body {
+  background-color: #eee;
+}
+
+.fs-12 {
+  font-size: 12px;
+}
+
+.fs-15 {
+  font-size: 15px;
+}
+
+.name {
+  margin-bottom: -2px;
+}
+
+.product-details {
+  margin-top: 13px;
+}
+
+</style>
+<style type="text/css">
+   .payment
+	{
+		border:1px solid #f2f2f2;
+		height:280px;
+        border-radius:20px;
+        background:#fff;
+	}
+   .payment_header
+   {
+	   background:rgb(11, 186, 13);
+	   padding:20px;
+       border-radius:20px 20px 0px 0px;
+
+   }
+
+   .check
+   {
+	   margin:0px auto;
+	   width: 50px;
+	   height: 50px;
+	   border-radius: 100%;
+	   background: #fff;
+	   text-align: center;
+   }
+
+   .check i
+   {
+	   vertical-align: -25px;
+	   line-height:50px;
+	   font-size:30px;
+   }
+
+    #some_content
+    {
+        text-align:center;
+    }
+
+    #some_content_h1
+    {
+        font-size:25px;
+        padding-top:25px;
+    }
+
+    #some_content a
+    {
+        width:200px;
+        height:35px;
+        color:#fff;
+        border-radius:30px;
+        padding:5px 10px;
+        background:rgb(11, 186, 13);
+        transition:all ease-in-out 0.3s;
+    }
+
+    #some_content a:hover
+    {
+        text-decoration:none;
+        background:#000;
+    }
+</style>
+
+<div class="container">
+   <div class="row">
+      <div class="col-md-6 mx-auto mt-5">
+         <div class="payment">
+            <div class="payment_header">
+               <div class="check"><i class="fa fa-check" aria-hidden="true" style="font-size:40px;"></i></div>
+            </div>
+            <div id="some_content">
+               <h1 id="some_content_h1">Payment Success !</h1>
+               <p>Your payment transaction is successful!  </p>
+               <a href="/">Go to Home</a>
+            </div>
+
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="container mt-5 mb-5">
+        <div class="d-flex justify-content-center row">
+            <div class="col-md-10">
+
+                <div class="receipt bg-white p-3 rounded"><img src="/static/images/Company Logo.png" style="width:120px;">
+                    <h4 class="mt-2 mb-3">Your order is confirmed!</h4>
+                    {% for address in address_list %}
+                    {% for payment in payment_list %}
+                    <h6 class="name">Hello {{ address.get_first_name() }} {{ address.get_last_name() }},</h6><span class="fs-12 text-black-50">your order has been confirmed and will be shipped in two days</span>
+
+                    <hr style="width: 870px; color: black;">
+                    <div class="d-flex flex-row justify-content-between align-items-center order-details">
+                        <div><span class="d-block fs-12">Order date</span><span class="font-weight-bold" id="p1">
+                            <script>
+                            var date = new Date();
+                            var current_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
+                            var current_time = date.getHours()+":"+date.getMinutes()+":"+ date.getSeconds();
+                            var date_time = current_date+" "+current_time;
+                            document.getElementById("p1").innerHTML = date_time;
+                            </script>
+                            </span></div>
+                        <div><span class="d-block fs-12">Order number</span><span class="font-weight-bold">OD44434324</span></div>
+                        <div><span class="d-block fs-12">Payment method</span><span class="font-weight-bold">{{ payment.get_payment_type() }}</span><img class="ml-1 mb-1" src="https://i.imgur.com/ZZr3Yqj.png" width="20"></div>
+                        <div><span class="d-block fs-12">Shipping Address</span><span class="font-weight-bold text-success">{{ address.get_address() }} at {{ address.get_zipcode() }}</span></div>
+
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                    <hr style="width: 870px; color: black;">
+                    <div>
+        <table class="table border table-responsive">
+            <thead>
+                <tr>
+                    <td>Product ID</td>
+                    <td>Product Image</td>
+                    <td>Product Name</td>
+                    <td>Product Brand</td>
+                    <td>Product Value</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in products %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>{{ item['image'] }}</td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['brand'] }}</td>
+                    <td>{{ item['price'] }}</td>
+                </tr>
+            {% endfor %}
+                <tr style="background-color: #f2f2f2">
+            {% set total = 0 %}
+                    <td colspan="4" style="text-align:center;font-size: 20px;"><b>Subtotal</b></td>
+                    <td style="font-size: 20px;"><b>$150.00</b></td>
+                </tr>
+            </tbody>
+        </table>
+                    <div class="mt-5 amount row">
+                        <div class="d-flex justify-content-center col-md-6"><img class="rounded" src="/static/images/sample-barcode.jpg" style="width:250px; height:100px;"></div>
+                        <div class="col-md-6">
+                            <div class="billing">
+                                {% set total = 200.00 %}
+                                <div class="d-flex justify-content-between"><span>Subtotal</span><span class="font-weight-bold">${{ total }}</span></div>
+                                <div class="d-flex justify-content-between mt-2"><span>Shipping fee</span><span class="font-weight-bold">$15</span></div>
+                                <div class="d-flex justify-content-between mt-2"><span>Tax</span><span class="font-weight-bold">$5</span></div>
+                                <hr style="width:420px;">
+                                <div class="d-flex justify-content-between mt-1"><span class="font-weight-bold">Total</span><span class="font-weight-bold text-success">$165</span></div>
+                            </div>
+                        </div>
+                    </div><span class="d-block">Expected delivery date</span><span class="font-weight-bold text-success">23 February 2023</span><span class="d-block mt-3 text-black-50 fs-15">We will be sending a shipping confirmation email when the item is shipped!</span>
+                    <hr style="width: 870px;">
+                    <div class="d-flex justify-content-between align-items-center footer">
+                        <div class="thanks"><span class="d-block font-weight-bold">Thanks for shopping</span><span>Cardhouse team</span></div>
+                        <div class="d-flex flex-column justify-content-end align-items-end"><span class="d-block font-weight-bold">Need Help?</span><span>Call: +65 9424 1424</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" style="float:right;">
+        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="/">Done</a></div>
+    </div>
+{% endblock %}
+</div>
+</body>

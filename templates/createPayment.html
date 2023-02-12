@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block title %}Library Loan System - Make Payment{% endblock %}
+{% from "formHelper.html" import render_field %}
+
+{% block content %}
+<head>
+<style>
+</style>
+</head>
+<body>
+<h1 class="display-4">Make Payment</h1>
+
+<div class="container">
+  <div class="row">
+      <!-- Left Side of Page -->
+    <div class="col">
+        <p class="fs-3 text-start" style="padding-top:20px;padding-bottom:20px;">
+            <h3 class="mb-4 text-uppercase">Payment Details</h3>
+        </p>
+    <form method="POST" action="" style="background-color: #eee;">
+     <!-- Type of Payment Buttons -->
+     <div class="border border-secondary rounded-3 p-2">
+        <div class="form-group pb-4 w-50">
+            {{ render_field(form.card_name, class="form-control form-control-lg") }}
+            <label class="form-label">Name on Card</label>
+        </div>
+        <div class="form-group pb-4 w-50">
+            {{ render_field(form.card_number, class="form-control form-control-lg") }}
+            <label class="form-label">Card Number</label>
+        </div>
+        <div class="form-group pb-4" style="width:150px;">
+            {{ render_field(form.security_code, class="form-control form-control-lg") }}
+            <label class="form-label">Security Code/CVV</label>
+        </div>
+        <div class="form-group pb-4" style="width:150px;display:inline-block;margin-right:20px;">
+            {{ render_field(form.expiry_month, class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group pb-4" style="width:150px;display:inline-block;">
+            {{ render_field(form.expiry_year, class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group pb-4">
+            {{ render_field(form.payment_type, class="form-control form-control-lg") }}
+            <label class="form-label">Payment Type</label>
+        </div>
+        <div class="form-group pb-4">
+            {{ render_field(form.delivery_type, class="form-control form-control-lg") }}
+            <label class="form-label">Delivery Type</label>
+        </div>
+        <div class="form-group pb-4">
+            {{ render_field(form.promo_code, class="form-control form-control-lg") }}
+            <label class="form-label">Promo Code</label>
+
+        </div>
+     </div>
+     <div class="p-2">
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+     </div>
+
+     </form>
+    </div>
+    <!-- End of Personal Details Form -->
+     <!-- Start of Right Side of Page -->
+    <div class="col">
+        <p class="fs-3 text-start" style="padding-top:20px;padding-bottom:20px;">
+        <h3 class="mb-4 text-uppercase">Your Order</h3>
+        </p>
+       <!-- Right Side of Page -->
+       <!-- Start of Cart -->
+        <div>
+        <table class="table border table-responsive">
+            <thead>
+                <tr>
+                    <td>Product ID</td>
+                    <td>Product Image</td>
+                    <td>Product Name</td>
+                    <td>Product Brand</td>
+                    <td>Product Quantity</td>
+                    <td>Product Value</td>
+                    <td>Total Price</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in data %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td><img class="img-fluid rounded-3" src="{{ url_for('static', filename='uploads/'+item['image']) }}" alt="" /></td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['brand'] }}</td>
+                    <td>{{ item['quantity'] }}</td>
+                    <td>{{ item['price'] }}</td>
+                    <td>{{ item['total'] }}</td>
+                </tr>
+            {% endfor %}
+
+                <tr>
+                    <td colspan="4" style="text-align:center;"><b>Subtotal</b></td>
+                    <td>${{ total }}</td>
+
+                </tr>
+            </tbody>
+        </table>
+        <!-- End of Cart -->
+        </div>
+    </div>
+  </div>
+</div>
+</body>
+
+{% endblock %}
